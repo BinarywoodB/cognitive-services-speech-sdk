@@ -48,7 +48,7 @@
                 "args": [
                     "run",
                     "--project",
-                    "${workspaceFolder}\\helloworld\\bin\\release\\net6.0\\helloworld.exe"
+                    "${workspaceFolder}/helloworld/bin/release/net6.0/helloworld.exe"
                 ]
             },
             "linux": {

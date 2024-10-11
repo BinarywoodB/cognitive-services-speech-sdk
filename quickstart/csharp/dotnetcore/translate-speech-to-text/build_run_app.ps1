@@ -12,6 +12,6 @@ if ($null -eq $dotnetVersion -or [version]$dotnetVersion -lt [version]"6.0") {
     & .\dotnet-install.ps1 -Version "6.0.0"
 }
 
-dotnet add .\helloworld\helloworld.csproj package Microsoft.CognitiveServices.Speech --source https://api.nuget.org/v3/index.json
-
-dotnet build .\helloworld\helloworld.csproj --configuration release
+dotnet restore ./helloworld
+dotnet add .\helloworld package Microsoft.CognitiveServices.Speech --source https://api.nuget.org/v3/index.json
+dotnet build .\helloworld --configuration release
