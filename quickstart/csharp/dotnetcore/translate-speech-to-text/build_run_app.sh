@@ -1,5 +1,8 @@
 #!/bin/bash
 
+sudo apt-get update
+sudo apt-get install libssl-dev libasound2
+
 if ! command -v dotnet &> /dev/null; then
     echo ".NET SDK is not installed, installing .NET 6..."
     wget https://dot.net/v1/dotnet-install.sh
@@ -15,6 +18,7 @@ if [[ "$dotnetVersion" < "6.0" ]]; then
     ./dotnet-install.sh --version 6.0.0
 fi
 
-dotnet restore ./helloworld
+cp .config.json ./helloworld
+
 dotnet add ./helloworld package Microsoft.CognitiveServices.Speech --source https://api.nuget.org/v3/index.json
 dotnet build ./helloworld --configuration release
