@@ -17,4 +17,4 @@ fi
 
 dotnet add ./helloworld/helloworld.csproj package Microsoft.CognitiveServices.Speech --source https://api.nuget.org/v3/index.json
 
-dotnet build ./helloworld/helloworld.csproj --configuration release
+dotnet build ./helloworld/helloworld.csproj --configuration Release
