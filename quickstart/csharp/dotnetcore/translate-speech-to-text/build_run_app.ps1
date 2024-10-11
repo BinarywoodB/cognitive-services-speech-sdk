@@ -4,6 +4,14 @@ if (-not (Get-Command dotnet -ErrorAction SilentlyContinue)) {
     & .\dotnet-install.ps1 --version 6.0.0
 }
 
-dotnet add .\helloworld\helloworld.csproj package Microsoft.CognitiveServices.Speech
+$dotnetVersion = & dotnet --version
+if ($null -eq $dotnetVersion -or [version]$dotnetVersion -lt [version]"6.0") {
+    Write-Host "The currently installed .NET version is $dotnetVersion. Will install .NET 6 for you."
 
-dotnet build .\helloworld\helloworld.csproj --configuration Release
+    Invoke-WebRequest -Uri "https://dot.net/v1/dotnet-install.ps1" -OutFile "dotnet-install.ps1"
+    & .\dotnet-install.ps1 -Version "6.0.0"
+}
+
+dotnet add .\helloworld\helloworld.csproj package Microsoft.CognitiveServices.Speech --source https://api.nuget.org/v3/index.json
+
+dotnet build .\helloworld\helloworld.csproj --configuration release
