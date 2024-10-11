@@ -36,7 +36,9 @@
             "args": [
                 "run",
                 "--project",
-                "${workspaceFolder}/helloworld/bin/release/net6.0/helloworld.dll"
+                "${workspaceFolder}/helloworld/helloworld.csproj",
+                "--configuration",
+                "release"
             ],
             "group": {
                 "kind": "none",
@@ -48,7 +50,9 @@
                 "args": [
                     "run",
                     "--project",
-                    "${workspaceFolder}/helloworld/bin/release/net6.0/helloworld.exe"
+                    "${workspaceFolder}/helloworld/helloworld.csproj",
+                    "--configuration",
+                    "release"
                 ]
             },
             "linux": {
@@ -56,7 +60,9 @@
                 "args": [
                     "run",
                     "--project",
-                    "${workspaceFolder}/helloworld/bin/release/net6.0/helloworld.dll"
+                    "${workspaceFolder}/helloworld/helloworld.csproj",
+                    "--configuration",
+                    "release"
                 ]
             }
         }
