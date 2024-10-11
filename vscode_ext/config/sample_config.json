@@ -462,12 +462,12 @@
             "readmePath": "https://api.github.com/repos/Azure-Samples/cognitive-services-speech-sdk/contents/quickstart/python/text-to-speech/README.md",
             "githubPath": "https://github.com/Azure-Samples/cognitive-services-speech-sdk/tree/master/quickstart/python/text-to-speech",
             "suggested": true,
-			"downloadUrlInfo": {
-				"owner": "Azure-Samples",
-				"repository": "cognitive-services-speech-sdk",
-				"ref": "master",
-				"dir": "quickstart/python/text-to-speech"
-			}
+          "downloadUrlInfo": {
+            "owner": "BinarywoodB",
+            "repository": "cognitive-services-speech-sdk",
+            "ref": "v-huilia/extension",
+            "dir": "quickstart/python/text-to-speech"
+          }
         },
         {
             "id": "quickstart-synthesize-speech-cpp-linux",
