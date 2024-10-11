@@ -25,9 +25,7 @@ namespace helloworld
         {
             // Creates an instance of a speech translation config with specified subscription key and service region.
             // Replace with your own subscription key and service region (e.g., "westus").
-            string currentDirectory = Directory.GetCurrentDirectory();
-            string configFilePath = Path.Combine(Directory.GetParent(currentDirectory).Parent.Parent.Parent.FullName, "config.json");
-            string jsonString = await File.ReadAllTextAsync(configFilePath);
+            string jsonString = await File.ReadAllTextAsync("config.json");
             ConfigSettings configSettings = JsonSerializer.Deserialize<ConfigSettings>(jsonString);
 
             Console.WriteLine($"YourSubscriptionKey: {configSettings.YourSubscriptionKey}");
