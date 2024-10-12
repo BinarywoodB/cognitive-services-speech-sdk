@@ -40,7 +40,7 @@ See the [accompanying article](https://docs.microsoft.com/azure/cognitive-servic
 * If you are using Microsoft Visual Studio 2017 on Windows:
   * Start Microsoft Visual Studio 2017 and select **File** \> **Open** \> **Project/Solution**.
   * Navigate to the folder containing this sample, and select the solution file contained within it.
-* Edit the `Program.cs` source:
+* Edit the `config.json` source:
   * Replace the string `YourSubscriptionKey` with your own subscription key in config.json.
   * Replace the string `YourServiceRegion` with the service region of your subscription in config.json.
     For example, replace with `westus` if you are using the 30-day free trial subscription.
