@@ -18,5 +18,5 @@ if [[ "$dotnetVersion" < "6.0" ]]; then
     ./dotnet-install.sh --version 6.0.0
 fi
 
-dotnet add ./helloworld package Microsoft.CognitiveServices.Speech --source https://api.nuget.org/v3/index.json
+dotnet add ./helloworld package Microsoft.CognitiveServices.Speech --interactive
 dotnet build ./helloworld --configuration release
