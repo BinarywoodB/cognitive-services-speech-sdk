@@ -4,9 +4,9 @@
         {
             "label": "Build the App",
             "type": "shell",
-            "command": "bash",
+            "command": "${workspaceFolder}/build_run_app.sh",
             "args": [
-                "${workspaceFolder}/build_run_app.sh"
+                "build"
             ],
             "group": {
                 "kind": "build",
@@ -19,26 +19,23 @@
                     "-ExecutionPolicy",
                     "Bypass",
                     "-File",
-                    "${workspaceFolder}/build_run_app.ps1"
+                    "${workspaceFolder}/build_run_app.ps1",
+                    "build"
                 ]
             },
             "linux": {
-                "command": "bash",
+                "command": "${workspaceFolder}/build_run_app.ps1",
                 "args": [
-                    "${workspaceFolder}/build_run_app.sh"
+                    "build"
                 ]
             }
         },
         {
             "label": "Run the App",
             "type": "shell",
-            "command": "dotnet",
+            "command": "${workspaceFolder}/build_run_app.sh",
             "args": [
-                "run",
-                "--project",
-                "${workspaceFolder}/helloworld/helloworld.csproj",
-                "--configuration",
-                "release"
+                "run"
             ],
             "group": {
                 "kind": "none",
@@ -46,23 +43,19 @@
             },
             "problemMatcher": [],
             "windows": {
-                "command": "dotnet",
+                "command": "powershell",
                 "args": [
-                    "run",
-                    "--project",
-                    "${workspaceFolder}/helloworld/helloworld.csproj",
-                    "--configuration",
-                    "release"
+                    "-ExecutionPolicy",
+                    "Bypass",
+                    "-File",
+                    "${workspaceFolder}/build_run_app.ps1",
+                    "run"
                 ]
             },
             "linux": {
-                "command": "dotnet",
+                "command": "${workspaceFolder}/build_run_app.sh",
                 "args": [
-                    "run",
-                    "--project",
-                    "${workspaceFolder}/helloworld/helloworld.csproj",
-                    "--configuration",
-                    "release"
+                    "run"
                 ]
             }
         }

@@ -1,16 +1,65 @@
-if (-not (Get-Command dotnet -ErrorAction SilentlyContinue)) {
-    Write-Host ".NET SDK is not installed, installing .NET 6..."
+param(
+    [string]$action
+)
+
+$dotnetInstalledDirectory = "$env:TEMP\dotnet"
+$dotnetPath = Join-Path $dotnetInstalledDirectory "dotnet.exe"
+
+
+function Install-DotNet6 {
     Invoke-WebRequest -Uri https://dot.net/v1/dotnet-install.ps1 -OutFile dotnet-install.ps1
-    & .\dotnet-install.ps1 --version 6.0.0
+    if (-not $?) {
+        Write-Host "Failed to download dotnet-install.ps1, exiting..." -ForegroundColor Red
+        exit 1
+    }
+
+    & .\dotnet-install.ps1 -InstallDir $dotnetInstalledDirectory -Version 6.0.427
+    if (-not $?) {
+        Write-Host "Failed to install .NET SDK, exiting..." -ForegroundColor Red
+        exit 1
+    }
+
+    Write-Host ".NET 6 installed successfully." -ForegroundColor Green
+    Remove-Item -Force dotnet-install.ps1
 }
 
-$dotnetVersion = & dotnet --version
-if ($null -eq $dotnetVersion -or [version]$dotnetVersion -lt [version]"6.0") {
-    Write-Host "The currently installed .NET version is $dotnetVersion. Will install .NET 6 for you."
 
-    Invoke-WebRequest -Uri "https://dot.net/v1/dotnet-install.ps1" -OutFile "dotnet-install.ps1"
-    & .\dotnet-install.ps1 -Version "6.0.0"
+if ($action -eq "build") {
+    if (-not (Get-Command dotnet -ErrorAction SilentlyContinue)) {
+        Write-Host ".NET SDK is not installed, installing .NET SDK 6.0..."
+        Install-DotNet6
+    }
+    else {
+        $dotnetVersion = & dotnet --version
+        if ([version]$dotnetVersion -lt [version]"6.0") {
+            Write-Host "The currently installed .NET SDK version is $dotnetVersion. Will install .NET SDK 6.0 for you."
+            Install-DotNet6
+        }
+    }
+
+    & $dotnetPath add .\helloworld package Microsoft.CognitiveServices.Speech --interactive
+    if ($?) {
+        Write-Host "Installation Microsoft.CognitiveServices.Speech package is succeeded." -ForegroundColor Green
+    }
+    else {
+        Write-Host "Installation Microsoft.CognitiveServices.Speech package is failed, exiting..." -ForegroundColor Red
+        exit 1
+    }
+
+    & $dotnetPath build .\helloworld --configuration release
+    if ($?) {
+        Write-Host "Building is succeeded." -ForegroundColor Green
+    }
+    else {
+        Write-Host "Building is failed, exiting..." -ForegroundColor Red
+        exit 1
+    }
 }
-
-dotnet add .\helloworld package Microsoft.CognitiveServices.Speech --interactive
-dotnet build .\helloworld --configuration release
+elseif ($action -eq "run") {
+    & $dotnetPath run --project .\helloworld\helloworld.csproj --configuration release
+}
+else {
+    Write-Host "Invalid action: $action" -ForegroundColor Red
+    Write-Host "Usage: build or run"
+    exit 1
+}
