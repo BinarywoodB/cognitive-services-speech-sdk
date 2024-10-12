@@ -40,10 +40,10 @@ See the [accompanying article](https://docs.microsoft.com/azure/cognitive-servic
 * If you are using Microsoft Visual Studio 2017 on Windows:
   * Start Microsoft Visual Studio 2017 and select **File** \> **Open** \> **Project/Solution**.
   * Navigate to the folder containing this sample, and select the solution file contained within it.
-* Edit the `config.json` source:
-  * Replace the `your_actual_subscription_key` with your own subscription key.
-  * Replace the `your_actual_service_region` with the service region of your subscription.
-    For example, replace with `westus` if you are using the 30-day free trial subscription.
+  * Edit the `config.json` source in the helloworld C# project:
+    * Replace the `your_actual_subscription_key` with your own subscription key.
+    * Replace the `your_actual_service_region` with the service region of your subscription.
+      For example, replace with `westus` if you are using the 30-day free trial subscription.
 * If you are using Microsoft Visual Studio 2017 on Windows, press Ctrl+Shift+B, or select **Build** \> **Build Solution**.
 * If you are using the .NET Core CLI, run the following command from the directory that contains this sample:
 
