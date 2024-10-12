@@ -3,29 +3,18 @@
         "capabilities": [
             "Speech To Text",
             "Text To Speech",
-            "Speech Translation",
-            "Realtime Speech To Text",
-            "Batch Speech To Text",
-            "Batch Text to Speech",
-            "Speech Translation",
-            "Keyword Recognition",
-            "Custom Keyword",
-            "Video Translation",
-            "Text to Speech Avatar"
+            "Speech Translation"
         ],
         "languages": [
             "C++",
             "C#",
             "Java",
             "JavaScript",
-            "Objective-C",
-            "Swift",
             "Python"
         ],
         "platform": [
             "Linux",
             "Windows",
-            "IOS",
             "MacOS",
             ".NET Framework",
             ".NET Core",
