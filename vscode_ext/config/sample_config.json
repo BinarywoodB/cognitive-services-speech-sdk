@@ -689,7 +689,7 @@
             "downloadUrlInfo": {
                 "owner": "BinarywoodB",
                 "repository": "cognitive-services-speech-sdk",
-                "ref": "extension",
+                "ref": "v-shaota/SynthesizeSpeechCppLinux",
                 "dir": "quickstart/csharp/dotnetcore/translate-speech-to-text"
             }
         },

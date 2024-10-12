@@ -25,34 +25,46 @@ function Install-DotNet6 {
 
 
 if ($action -eq "build") {
-    if (-not (Get-Command dotnet -ErrorAction SilentlyContinue)) {
-        Write-Host ".NET SDK is not installed, installing .NET SDK 6.0..."
+    if (-not (Get-Command dotnet -ErrorAction SilentlyContinue) -or ([version]$(dotnet --version) -lt [version]"6.0")) {
+        Write-Host "Installing .NET SDK 6.0..."
         Install-DotNet6
-    }
-    else {
-        $dotnetVersion = & dotnet --version
-        if ([version]$dotnetVersion -lt [version]"6.0") {
-            Write-Host "The currently installed .NET SDK version is $dotnetVersion. Will install .NET SDK 6.0 for you."
-            Install-DotNet6
+
+        & $dotnetPath add .\helloworld package Microsoft.CognitiveServices.Speech --interactive
+        if ($?) {
+            Write-Host "Installation Microsoft.CognitiveServices.Speech package is succeeded." -ForegroundColor Green
+        }
+        else {
+            Write-Host "Installation Microsoft.CognitiveServices.Speech package is failed, exiting..." -ForegroundColor Red
+            exit 1
+        }
+
+        & $dotnetPath build .\helloworld --configuration release
+        if ($?) {
+            Write-Host "Building is succeeded." -ForegroundColor Green
+        }
+        else {
+            Write-Host "Building is failed, exiting..." -ForegroundColor Red
+            exit 1
         }
     }
-
-    & $dotnetPath add .\helloworld package Microsoft.CognitiveServices.Speech --interactive
-    if ($?) {
-        Write-Host "Installation Microsoft.CognitiveServices.Speech package is succeeded." -ForegroundColor Green
-    }
     else {
-        Write-Host "Installation Microsoft.CognitiveServices.Speech package is failed, exiting..." -ForegroundColor Red
-        exit 1
-    }
+        & dotnet add .\helloworld package Microsoft.CognitiveServices.Speech --interactive
+        if ($?) {
+            Write-Host "Installation Microsoft.CognitiveServices.Speech package is succeeded." -ForegroundColor Green
+        }
+        else {
+            Write-Host "Installation Microsoft.CognitiveServices.Speech package is failed, exiting..." -ForegroundColor Red
+            exit 1
+        }
 
-    & $dotnetPath build .\helloworld --configuration release
-    if ($?) {
-        Write-Host "Building is succeeded." -ForegroundColor Green
-    }
-    else {
-        Write-Host "Building is failed, exiting..." -ForegroundColor Red
-        exit 1
+        & dotnet build .\helloworld --configuration release
+        if ($?) {
+            Write-Host "Building is succeeded." -ForegroundColor Green
+        }
+        else {
+            Write-Host "Building is failed, exiting..." -ForegroundColor Red
+            exit 1
+        }
     }
 }
 elseif ($action -eq "run") {
