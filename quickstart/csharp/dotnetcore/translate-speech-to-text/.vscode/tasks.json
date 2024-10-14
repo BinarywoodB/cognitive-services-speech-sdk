@@ -24,7 +24,7 @@
                 ]
             },
             "linux": {
-                "command": "${workspaceFolder}/build_run_app.ps1",
+                "command": "${workspaceFolder}/build_run_app.sh",
                 "args": [
                     "build"
                 ]
