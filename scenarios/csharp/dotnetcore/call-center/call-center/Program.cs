@@ -88,7 +88,7 @@ namespace CallCenter
         private const int waitSeconds = 10;
 
         // This should not change unless you switch to a new version of the Speech REST API.
-        private const string speechTranscriptionPath = "speechtotext/v3.1/transcriptions";
+        private const string speechTranscriptionPath = "speechtotext/v3.2/transcriptions";
 
         // These should not change unless you switch to a new version of the Cognitive Language REST API.
         private const string sentimentAnalysisPath = "language/:analyze-text";
