@@ -2,38 +2,33 @@
     "version": "2.0.0",
     "tasks": [
         {
-            "label": "Run the App",
+            "label": "Configuration and Setup",
             "type": "shell",
-            "command": "${workspaceFolder}/build_run_app.sh",
+            "command": "/bin/bash",
             "args": [
-                "run"
+                "-c",
+                "chmod u+x ${workspaceFolder}/app_manager.sh && ${workspaceFolder}/app_manager.sh configure"
             ],
             "group": {
                 "kind": "build",
                 "isDefault": false
             },
-            "problemMatcher": [],
+            "problemMatcher": "$msCompile",
             "windows": {
                 "command": "powershell",
                 "args": [
                     "-ExecutionPolicy",
                     "Bypass",
                     "-File",
-                    "${workspaceFolder}/build_run_app.ps1",
-                    "run"
-                ]
-            },
-            "linux": {
-                "command": "${workspaceFolder}/build_run_app.sh",
-                "args": [
-                    "run"
+                    "${workspaceFolder}/app_manager.ps1",
+                    "configure"
                 ]
             }
         },
         {
             "label": "Build the App",
             "type": "shell",
-            "command": "./build_run_app.sh",
+            "command": "${workspaceFolder}/app_manager.sh",
             "args": [
                 "build"
             ],
@@ -41,21 +36,38 @@
                 "kind": "build",
                 "isDefault": false
             },
-            "problemMatcher": [],
+            "problemMatcher": "$msCompile",
             "windows": {
                 "command": "powershell",
                 "args": [
                     "-ExecutionPolicy",
                     "Bypass",
                     "-File",
-                    "${workspaceFolder}/build_run_app.ps1",
+                    "${workspaceFolder}/app_manager.ps1",
                     "build"
                 ]
+            }
+        },
+        {
+            "label": "Run the App",
+            "type": "shell",
+            "command": "${workspaceFolder}/app_manager.sh",
+            "args": [
+                "run"
+            ],
+            "group": {
+                "kind": "none",
+                "isDefault": false
             },
-            "linux": {
-                "command": "${workspaceFolder}/build_run_app.sh",
+            "problemMatcher": "$msCompile",
+            "windows": {
+                "command": "powershell",
                 "args": [
-                    "build"
+                    "-ExecutionPolicy",
+                    "Bypass",
+                    "-File",
+                    "${workspaceFolder}/app_manager.ps1",
+                    "run"
                 ]
             }
         }
