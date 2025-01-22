@@ -100,7 +100,7 @@ elseif ($action -eq "run") {
         Write-Host "File not found: $envFilePath. You can create one to set environment variables or manually set secrets in environment variables."
     }
     
-    & dotnet run --project .\BatchSynthesisSample.csproj --realtime
+    & dotnet run --project .\BatchSynthesisSample\BatchSynthesisSample.csproj
 
     # Check if the command was successful
     if (-not $?) {
