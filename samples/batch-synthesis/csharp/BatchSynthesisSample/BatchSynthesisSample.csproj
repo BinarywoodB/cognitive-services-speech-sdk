@@ -9,7 +9,7 @@
     <PackageReference Include="Newtonsoft.Json" version="13.0.1" PrivateAssets="All" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="..\..\Gatsby-chapter1.txt">
+    <Content Include=".\Gatsby-chapter1.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
