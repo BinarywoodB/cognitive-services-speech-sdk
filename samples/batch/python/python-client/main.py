@@ -4,6 +4,7 @@
 # Copyright (c) Microsoft. All rights reserved.
 # Licensed under the MIT license. See LICENSE.md file in the project root for full license information.
 
+import json
 import logging
 import sys
 import requests
@@ -16,14 +17,17 @@ logging.basicConfig(stream=sys.stdout, level=logging.DEBUG,
 API_VERSION = "2024-11-15"
 
 # Your subscription key and region for the speech service
-SUBSCRIPTION_KEY = "YourSubscriptionKey"
-SERVICE_REGION = "YourServiceRegion"
+with open('../config.json', 'r') as config_file:
+    config = json.load(config_file)
+
+SUBSCRIPTION_KEY = config.get("SubscriptionKey")
+SERVICE_REGION = config.get("ServiceRegion")
 
 NAME = "Simple transcription"
 DESCRIPTION = "Simple transcription description"
 
-LOCALE = "en-US"
-RECORDINGS_BLOB_URI = "<Your SAS Uri to the recording>"
+LOCALE = sys.argv[1]
+RECORDINGS_BLOB_URI = sys.argv[2]
 
 # Provide the uri of a container with audio files for transcribing all of them
 # with a single request. At least 'read' and 'list' (rl) permissions are required.
