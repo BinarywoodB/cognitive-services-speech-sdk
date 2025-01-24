@@ -4,6 +4,7 @@
 # Copyright (c) Microsoft. All rights reserved.
 # Licensed under the MIT license. See LICENSE.md file in the project root for full license information.
 
+import os
 import json
 import logging
 import sys
@@ -17,7 +18,8 @@ logging.basicConfig(stream=sys.stdout, level=logging.DEBUG,
 API_VERSION = "2024-11-15"
 
 # Your subscription key and region for the speech service
-with open('../config.json', 'r') as config_file:
+config_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "config.json")
+with open(config_path, 'r') as config_file:
     config = json.load(config_file)
 
 SUBSCRIPTION_KEY = config.get("SubscriptionKey")
