@@ -10,18 +10,30 @@
 
   // Create API Instance
   var apiInstance = new SpeechToTextApiV30.DefaultApi();
-  // Your subscription key and region for the speech service
 
-  var API_KEY=""
+  // Read config.json file
+  const configPath = path.resolve(__dirname, "config.json");
+  let config = {};
+  try {
+    config = JSON.parse(fs.readFileSync(configPath, "utf8"));
+  } catch (error) {
+    console.error(`Error reading config.json: ${error.message}`);
+    process.exit(1);
+  }
+
+  // Your subscription key and region for the speech service
+  var API_KEY = config.SubscriptionKey
+  // provide the service region
+  var SERVICE_REGION = config.ServiceRegion
+  var DEFAULTPATH = 'https://'+SERVICE_REGION+'.api.cognitive.microsoft.com/speechtotext/v3.0'
+  
+  const args = process.argv.slice(2);
+  var LOCALE = args[0]
+  // Provide the SAS URI of the audio file stored in Azure Blob Storage
+  var RECORDINGS_BLOB_URI = args[1]
+
   var NAME = "Simple transcription"
   var DESCRIPTION = "Simple transcription description"
-  var LOCALE = "en-US"
-  // provide the service region
-  var SERVICE_REGION = "your service region"
-  var DEFAULTPATH = 'https://'+SERVICE_REGION+'.api.cognitive.microsoft.com/speechtotext/v3.0'
-
-  // Provide the SAS URI of the audio file stored in Azure Blob Storage
-  var RECORDINGS_BLOB_URI = ""
 
   // Provide the SAS URI pointing to a container in Azure Blob Storage for transcribing all of them with a single request
   var RECORDINGS_CONTAINER_URI = ""
