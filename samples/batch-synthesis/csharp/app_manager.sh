@@ -2,7 +2,7 @@
 
 ACTION=$1
 DOTNET_PATH="dotnet"
-DOTNET_VERSION="6.0"
+DOTNET_VERSION="8.0"
 DOTNET_TEMP_DIR="${TEMP:-/tmp}/dotnet"
 DOTNET_TEMP_PATH="$DOTNET_TEMP_DIR/dotnet"
 
@@ -20,8 +20,8 @@ function is_dotnet_meet_requirement {
     return 0
 }
 
-function install_dotnet6 {
-    echo "Installing .NET SDK 6.0..."
+function install_dotnet {
+    echo "Installing .NET SDK 8.0..."
 
     curl -sSL https://dot.net/v1/dotnet-install.sh -o dotnet-install.sh
     if [[ $? -ne 0 ]]; then
@@ -29,7 +29,7 @@ function install_dotnet6 {
         exit 1
     fi
 
-    bash dotnet-install.sh --install-dir $DOTNET_TEMP_DIR --version 6.0.427
+    bash dotnet-install.sh --install-dir $DOTNET_TEMP_DIR --version 8.0.405
     if [[ $? -ne 0 ]]; then
         echo "Failed to install .NET SDK, exiting..." >&2
         exit 1
@@ -37,16 +37,8 @@ function install_dotnet6 {
 
     export PATH="$PATH:$DOTNET_TEMP_DIR"
 
-    echo ".NET 6.0 installed successfully."
+    echo ".NET 8.0 installed successfully."
     rm -f dotnet-install.sh
-}
-
-function test_gstreamer {
-    if ! command -v gst-launch-1.0 &> /dev/null; then
-        echo "GStreamer is not installed. Please install it before running the build." >&2
-        exit 1
-    fi
-    echo "GStreamer is installed."
 }
 
 if [[ "$ACTION" == "configure" ]]; then
@@ -54,15 +46,14 @@ if [[ "$ACTION" == "configure" ]]; then
     sudo apt-get update
     sudo apt-get install -y libssl-dev libasound2
     
-    # Install .NET SDK if it's not already installed or version is less than 6.0
-    if ! command -v dotnet &> /dev/null || [[ "$(dotnet --version)" < "6.0" ]]; then
-        install_dotnet6
+    # Install .NET SDK if it's not already installed or version is less than 8.0
+    if ! command -v dotnet &> /dev/null || [[ "$(dotnet --version)" < "8.0" ]]; then
+        install_dotnet
     else
-        echo ".NET SDK 6.0 is already installed"
+        echo ".NET SDK 8.0 is already installed"
     fi
-    test_gstreamer
 elif [[ "$ACTION" == "build" ]]; then
-    dotnet build ./captioning.sln
+    dotnet build ./BatchSynthesisSample.sln
     if [ $? -ne 0 ]; then
         echo "Build failed, exiting..."
         exit 1
@@ -83,8 +74,7 @@ elif [[ "$ACTION" == "run" ]]; then
         echo "File not found: $ENV_FILE_PATH. You can create one to set environment variables or manually set secrets in environment variables."
     fi
 
-    read -p "Please enter the path to the input .wav file (press Enter to use the default microphone): " INPUT_FILE
-    dotnet run --project ./captioning/captioning.csproj --realtime --input "$INPUT_FILE"
+    dotnet run --project ./BatchSynthesisSample/BatchSynthesisSample.csproj
 
     if [[ $? -ne 0 ]]; then
         echo "Run failed, exiting with status 1." >&2
