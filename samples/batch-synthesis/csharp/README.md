@@ -25,10 +25,21 @@ With this information, change the definitions of the appropriate constants in `p
 
 
 ## Prerequisites
-- Microsoft Azure Cognitive Services Speech SDK
+- users open the sample within vscode with our extension
+* Microsoft Azure Cognitive Services Speech SDK
+* (Optional)`relationship between custom voice names and deployment ID`: The relationship between custom voice names and deployment ID, if you want to use custom voices.
+* (Optional)`URI of a writable Azure blob container`: The URI of a writable Azure blob container, if you want to store the audio files in your own Azure storage.
 
+- users open the sample within vscode without our extension.
+* Microsoft Azure Cognitive Services Speech SDK
+* `SPEECH_KEY`: Your Speech resource key.
+* `SPEECH_REGION`: Your Speech resource region.
+* (Optional)`relationship between custom voice names and deployment ID`: The relationship between custom voice names and deployment ID, if you want to use custom voices.
+* (Optional)`URI of a writable Azure blob container`: The URI of a writable Azure blob container, if you want to store the audio files in your own Azure storage.
 
-### Environment Variable
-
-* `SPEECH_KEY`: Your Speech resource key. Overrides the SPEECH_KEY environment variable. VS Code will set SPEECH_KEY environment variable
-* `SPEECH_REGION`: Your Speech resource region. Overrides the SPEECH_REGION environment variable. VS Code will set SPEECH_REGION environment variable. Examples: `westus`, `northeurope`
+- users open the sample out of vscode from other source (like azure ai foundry, etc).
+* Microsoft Azure Cognitive Services Speech SDK
+* `SPEECH_KEY`: Your Speech resource key.
+* `SPEECH_REGION`: Your Speech resource region.
+* (Optional)`relationship between custom voice names and deployment ID`: The relationship between custom voice names and deployment ID, if you want to use custom voices.
+* (Optional)`URI of a writable Azure blob container`: The URI of a writable Azure blob container, if you want to store the audio files in your own Azure storage.
