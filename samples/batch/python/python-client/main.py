@@ -5,7 +5,7 @@
 # Licensed under the MIT license. See LICENSE.md file in the project root for full license information.
 
 import os
-import json
+import argparse
 import logging
 import sys
 import requests
@@ -17,19 +17,32 @@ logging.basicConfig(stream=sys.stdout, level=logging.DEBUG,
 
 API_VERSION = "2024-11-15"
 
-# Your subscription key and region for the speech service
-config_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "config.json")
-with open(config_path, 'r') as config_file:
-    config = json.load(config_file)
+# Initialize speech recognition engine
+SERVICE_REGION = os.environ.get('SPEECH_REGION')
+SUBSCRIPTION_KEY = os.environ.get('SPEECH_KEY')
 
-SUBSCRIPTION_KEY = config.get("SubscriptionKey")
-SERVICE_REGION = config.get("ServiceRegion")
+# Parse command-line arguments
+parser = argparse.ArgumentParser(description="Run app.py with custom parameters.")
+parser.add_argument(
+    "--recordings_blob_uri", 
+    type=str,
+    required=True, 
+    help="SAS URI pointing to audio files stored in Azure Blob Storage."
+)
+parser.add_argument(
+    "--locale", 
+    type=str, 
+    required=True,
+    help="The locale of the input audio file."
+)
+args = parser.parse_args()
+
+# Use user-provided or default recordings_blob_uri
+RECORDINGS_BLOB_URI = args.recordings_blob_uri
+LOCALE = args.locale
 
 NAME = "Simple transcription"
 DESCRIPTION = "Simple transcription description"
-
-LOCALE = sys.argv[1]
-RECORDINGS_BLOB_URI = sys.argv[2]
 
 # Provide the uri of a container with audio files for transcribing all of them
 # with a single request. At least 'read' and 'list' (rl) permissions are required.
@@ -48,7 +61,7 @@ def transcribe_from_single_blob(uri, properties):
         display_name=NAME,
         description=DESCRIPTION,
         locale=LOCALE,
-        content_urls=[uri],
+        content_urls=[url for url in uri.split(",")],
         properties=properties
     )
 

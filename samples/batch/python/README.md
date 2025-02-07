@@ -15,13 +15,9 @@ Follow these steps for the installation:
 1. Install the extracted python-client module in your Python environment using pip: `pip install path/to/package/python-client`.
 1. The installed package has the name `swagger_client`. You can check that the installation worked using the command `python -c "import swagger_client"`.
 
-## Install other dependencies
-
-The sample uses the `requests` library. You can install it with the command
-
-```bash
-pip install requests
-```
+## Prerequisites
+- SAS URI pointing to audio files stored in Azure Blob Storage. You can upload your local audio or recording files to your Azure blob storage. Of course, you can also download the example en-US audio files from [sample audio files](https://github.com/Azure-Samples/cognitive-services-speech-sdk/tree/master/sampledata/audiofiles) and then upload it to your Azure blob storage.
+- The locale (e.g. en-US, zh-CN, etc.) of the audio file.
 
 ## Run the Sample within VS Code
 1. Install "Azure AI Speech Toolkit" extension in VS Code.
@@ -31,4 +27,8 @@ pip install requests
 5. Trigger "Azure AI Speech Toolkit: Build the Sample App" command from command palette to build the sample.
 6. Trigger "Azure AI Speech Toolkit: Run the Sample App" command from command palette to run the sample.
 
-    This command will run the sample as a task in terminal. Interactively input SAS URI pointing to an audio file stored in Azure Blob Storage. (You can upload your local audio or recording files to your Azure blob storage. Of course, if you don't have audio, you can download this en-US audio file as an example: [Call1_separated_16k_health_insurance.wav](https://github.com/Azure-Samples/cognitive-services-speech-sdk/raw/master/scenarios/call-center/sampledata/Call1_separated_16k_health_insurance.wav) and upload it to your Azure blob storage.)
+## Environment Setup
+- Azure AI Speech Toolkit will automatically help you set these environment variables. If you want to run outside of VS Code, you can manually set the following environment variables.
+
+  - `SPEECH_REGION`: Azure region for the Speech Service (e.g., `eastus`).
+  - `SPEECH_KEY`: Azure Cognitive Services Speech API key.

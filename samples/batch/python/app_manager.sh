@@ -25,7 +25,20 @@ if [ "$action" == "build" ]; then
 
     pip install requests
 elif [ "$action" == "run" ]; then
-    read -p "Please enter a SAS URI pointing to an audio file stored in Azure Blob Storage: " recordingsBlobUri
+    # Load environment variables from .env file
+    ENV_FILE=".env/.env.dev" 
+    if [ -f "$ENV_FILE" ]; then
+        source "$ENV_FILE"
+
+        # Ensure environment variables are available to the C++ binary
+        export SPEECH_KEY=$SPEECH_RESOURCE_KEY
+        export SPEECH_REGION=$SERVICE_REGION
+        echo "Environment variables loaded from $ENV_FILE"
+    else
+        echo "Environment file $ENV_FILE not found. You can create one to set environment variables or manually set secrets in environment variables."
+    fi
+
+    read -p "Please enter SAS URI pointing to audio files stored in Azure Blob Storage. If input multiple, please separate them with commas: " recordingsBlobUri
     if [ -z "$recordingsBlobUri" ]; then
         echo "Not enter the Azure Blob SAS URL of the input audio file. Exiting..."
         exit 1
@@ -38,7 +51,7 @@ elif [ "$action" == "run" ]; then
     fi
 
     if command -v python3 &> /dev/null; then
-        python3 ./python-client/main.py $recordingsLocale $recordingsBlobUri
+        python3 ./python-client/main.py --recordings_blob_uri $recordingsBlobUri --locale  $recordingsLocale
     else
         echo -e "Python 3 is not found. Please install python3 first. Exiting..."
         exit 1
