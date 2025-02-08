@@ -19,8 +19,7 @@ if [ "$action" == "build" ]; then
 
     python -c "import swagger_client" 2>/dev/null
     if [ $? -ne 0 ]; then
-        echo "The swagger_client is not installed. Please install it base on https://github.com/Azure-Samples/cognitive-services-speech-sdk/blob/master/samples/batch/python/README.md#download-and-install-the-api-client-library"
-        exit 1
+        pip install ./python-api-client-library/python-client
     fi
 
     pip install requests

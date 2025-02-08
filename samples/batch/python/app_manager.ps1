@@ -12,8 +12,7 @@ if ($action -eq "build") {
     # Check if the swagger_client is already installed
     $moduleCheck = & python -c "import swagger_client" 2>&1
     if ($LASTEXITCODE -ne 0) {
-        Write-Host "The swagger_client is not installed. Please install it base on https://github.com/Azure-Samples/cognitive-services-speech-sdk/blob/master/samples/batch/python/README.md#download-and-install-the-api-client-library" -ForegroundColor Green
-        exit 1
+        & pip install .\python-api-client-library\python-client
     }
 
     pip install requests
