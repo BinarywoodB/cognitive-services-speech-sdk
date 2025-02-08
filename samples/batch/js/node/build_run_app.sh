@@ -19,14 +19,27 @@ if [ "$action" == "build" ]; then
 
     # Check if swagger_client is installed
     if ! npm list -g --depth=0 2>/dev/null | grep -q swagger_client; then
-        echo -e "The swagger_client is not installed. Please install it based on https://github.com/Azure-Samples/cognitive-services-speech-sdk/blob/master/samples/batch/js/node/README.md#download-and-install-the-api-client-library"
-        exit 1
+        npm install ./js-api-client-library/javascript-client
     fi
 
     npm install system-sleep
     npm install request
+    npm install yargs
 elif [ "$action" == "run" ]; then
-    read -p "Please enter a SAS URI pointing to an audio file stored in Azure Blob Storage: " recordingsBlobUri
+    # Load environment variables from .env file
+    ENV_FILE=".env/.env.dev" 
+    if [ -f "$ENV_FILE" ]; then
+        source "$ENV_FILE"
+
+        # Ensure environment variables are available to the C++ binary
+        export SPEECH_KEY=$SPEECH_RESOURCE_KEY
+        export SPEECH_REGION=$SERVICE_REGION
+        echo "Environment variables loaded from $ENV_FILE"
+    else
+        echo "Environment file $ENV_FILE not found. You can create one to set environment variables or manually set secrets in environment variables."
+    fi
+
+    read -p "Please enter SAS URI pointing to audio files stored in Azure Blob Storage. If input multiple, please separate them with commas: " recordingsBlobUri
     if [ -z "$recordingsBlobUri" ]; then
         echo "Not enter the Azure Blob SAS URL of the input audio file. Exiting..."
         exit 1
@@ -39,7 +52,7 @@ elif [ "$action" == "run" ]; then
     fi
 
     if node -v &> /dev/null; then
-        & node ./main.js $recordingsLocale $recordingsBlobUri
+        & node ./main.js  --recordings_blob_uri $recordingsBlobUri --locale $recordingsLocale
     else
         echo -e "Node.js is not installed. Please install Node.js first. Exiting..."
         exit 1

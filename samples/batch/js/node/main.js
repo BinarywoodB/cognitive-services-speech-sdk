@@ -11,26 +11,30 @@
   // Create API Instance
   var apiInstance = new SpeechToTextApiV30.DefaultApi();
 
-  // Read config.json file
-  const configPath = path.resolve(__dirname, "config.json");
-  let config = {};
-  try {
-    config = JSON.parse(fs.readFileSync(configPath, "utf8"));
-  } catch (error) {
-    console.error(`Error reading config.json: ${error.message}`);
-    process.exit(1);
-  }
+  const yargs = require("yargs");
+  const argv = yargs
+    .option("recordings_blob_uri", {
+      describe: "URI of the recordings blob",
+      type: "string",
+      demandOption: true,
+    })
+    .option("locale", {
+      describe: "Locale of the recording",
+      type: "string",
+      demandOption: true,
+    })
+    .help()
+    .argv;
 
   // Your subscription key and region for the speech service
-  var API_KEY = config.SubscriptionKey
+  var API_KEY = process.env.SPEECH_KEY;
   // provide the service region
-  var SERVICE_REGION = config.ServiceRegion
+  var SERVICE_REGION = process.env.SPEECH_REGION;
   var DEFAULTPATH = 'https://'+SERVICE_REGION+'.api.cognitive.microsoft.com/speechtotext/v3.0'
-  
-  const args = process.argv.slice(2);
-  var LOCALE = args[0]
+
+  var LOCALE = argv.locale
   // Provide the SAS URI of the audio file stored in Azure Blob Storage
-  var RECORDINGS_BLOB_URI = args[1]
+  var RECORDINGS_BLOB_URI = argv.recordings_blob_uri
 
   var NAME = "Simple transcription"
   var DESCRIPTION = "Simple transcription description"
@@ -187,7 +191,7 @@
       'transcription' : new SpeechToTextApiV30.Transcription()
     }  
     opts.transcription = {
-      "contentUrls": [uri],
+      "contentUrls": uri.split(",").map(u => u.trim()),
       "properties": {
         "wordLevelTimestampsEnabled": true
       },

@@ -1,30 +1,8 @@
 # How to use the Speech Services Batch Transcription API from Node.js
 
-## Download and install the API client library
-
-To execute the sample you need to generate the Javascript library for the REST API which is generated through Swagger.
-
-Follow these steps for the installation:
-
-1. Go to https://editor.swagger.io.
-1. Click **File**, then click **Import URL**.
-1. Enter the Swagger URL for the Speech Services API: `https://westus.dev.cognitive.microsoft.com/docs/services/speech-to-text-api-v3-0/export?DocumentFormat=Swagger&ApiName=Speech%20to%20Text%20API%20v3.0`.
-1. Click **Generate Client** and select **Javascript**.
-1. Save the client library.
-1. Extract the downloaded javascript-client-generated.zip somewhere in your file system.
-1. Install the extracted javascript-client module in your nodejs environment using npm
-`npm install installpath/to/package/javascript-client`
-
-
-## Install other dependencies
-
-The sample uses the `requests` and `system-sleep` library. You can install it with the command
-
-```bash
-npm install system-sleep
-npm install request
-```
-```
+## Prerequisites
+- SAS URI pointing to audio files stored in Azure Blob Storage. You can upload your local audio or recording files to your Azure blob storage. Of course, you can also download the example en-US audio files from [sample audio files](https://github.com/Azure-Samples/cognitive-services-speech-sdk/tree/master/sampledata/audiofiles) and then upload it to your Azure blob storage.
+- The locale (e.g. en-US, zh-CN, etc.) of the audio file.
 
 ## Run the Sample within VS Code
 
@@ -35,4 +13,8 @@ npm install request
 5. Trigger "Azure AI Speech Toolkit: Build the Sample App" command from command palette to build the sample.
 6. Trigger "Azure AI Speech Toolkit: Run the Sample App" command from command palette to run the sample.
 
-    This command will run the sample as a task in terminal. Interactively input SAS URI pointing to an audio file stored in Azure Blob Storage. (You can upload your local audio or recording files to your Azure blob storage. Of course, if you don't have audio, you can download this en-US audio file as an example: [Call1_separated_16k_health_insurance.wav](https://github.com/Azure-Samples/cognitive-services-speech-sdk/raw/master/scenarios/call-center/sampledata/Call1_separated_16k_health_insurance.wav) and upload it to your Azure blob storage.)
+## Environment Setup
+- Azure AI Speech Toolkit will automatically help you set these environment variables. If you want to run outside of VS Code, you can manually set the following environment variables.
+
+  - `SPEECH_REGION`: Azure region for the Speech Service (e.g., `eastus`).
+  - `SPEECH_KEY`: Azure Cognitive Services Speech API key.
