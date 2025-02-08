@@ -191,7 +191,7 @@
       'transcription' : new SpeechToTextApiV30.Transcription()
     }  
     opts.transcription = {
-      "contentUrls": uri.split(",").map(u => u.trim()),
+      "contentUrls": uri.split(",").map(x => x.trim()),
       "properties": {
         "wordLevelTimestampsEnabled": true
       },

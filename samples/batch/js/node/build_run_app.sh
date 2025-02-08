@@ -17,14 +17,7 @@ if [ "$action" == "build" ]; then
         exit 1
     fi
 
-    # Check if swagger_client is installed
-    if ! npm list -g --depth=0 2>/dev/null | grep -q swagger_client; then
-        npm install ./js-api-client-library/javascript-client
-    fi
-
-    npm install system-sleep
-    npm install request
-    npm install yargs
+    npm install
 elif [ "$action" == "run" ]; then
     # Load environment variables from .env file
     ENV_FILE=".env/.env.dev" 

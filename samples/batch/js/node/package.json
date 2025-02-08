@@ -1,0 +1,17 @@
+{
+  "name": "samplebatchtranscriptionnodejs",
+  "version": "1.0.0",
+  "description": "A Node.js project using local API client library",
+  "main": "main.js",
+  "scripts": {
+    "start": "node main.js"
+  },
+  "dependencies": {
+    "speech_to_text_api_v30": "file:js-api-client-library/javascript-client",
+    "request": "^2.88.2",
+    "system-sleep": "^1.3.7",
+    "yargs": "^17.7.2"
+  },
+  "author": "",
+  "license": "MIT"
+}

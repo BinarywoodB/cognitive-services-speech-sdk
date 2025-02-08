@@ -9,15 +9,7 @@ if ($action -eq "build") {
         exit 1
     }
 
-    # Check if the swagger_client is already installed
-    $isSwaggerClientInstalled = npm list -g --depth=0 | Select-String swagger_client
-    if (-not $isSwaggerClientInstalled) {
-        npm install .\js-api-client-library\javascript-client
-    }
-
-    npm install system-sleep
-    npm install request
-    npm install yargs
+    npm install
 }
 elseif ($action -eq "run") {
     # Define the path to your .env file
