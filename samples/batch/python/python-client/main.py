@@ -17,28 +17,46 @@ logging.basicConfig(stream=sys.stdout, level=logging.DEBUG,
 
 API_VERSION = "2024-11-15"
 
-# Initialize speech recognition engine
-SERVICE_REGION = os.environ.get('SPEECH_REGION')
-SUBSCRIPTION_KEY = os.environ.get('SPEECH_KEY')
-
 # Parse command-line arguments
 parser = argparse.ArgumentParser(description="Run app.py with custom parameters.")
 parser.add_argument(
-    "--recordings_blob_uri", 
+    "--service_key",
     type=str,
-    required=True, 
+    required=True,
+    help="The subscription key if the speech service."
+)
+parser.add_argument(
+    "--service_region",
+    type=str,
+    required=True,
+    help="The region for the speech service."
+)
+parser.add_argument(
+    "--recordings_blob_uris",
+    type=str,
+    required=False,
     help="SAS URI pointing to audio files stored in Azure Blob Storage."
 )
 parser.add_argument(
-    "--locale", 
-    type=str, 
+    "--recordings_container_uri",
+    type=str,
+    required=False,
+    help="SAS URI pointing to a container in Azure Blob Storage."
+)
+parser.add_argument(
+    "--locale",
+    type=str,
     required=True,
     help="The locale of the input audio file."
 )
 args = parser.parse_args()
 
+# Initialize speech recognition engine
+SUBSCRIPTION_KEY = args.service_key
+SERVICE_REGION = args.service_region
+
 # Use user-provided or default recordings_blob_uri
-RECORDINGS_BLOB_URI = args.recordings_blob_uri
+RECORDINGS_BLOB_URIS = args.recordings_blob_uris
 LOCALE = args.locale
 
 NAME = "Simple transcription"
@@ -46,31 +64,31 @@ DESCRIPTION = "Simple transcription description"
 
 # Provide the uri of a container with audio files for transcribing all of them
 # with a single request. At least 'read' and 'list' (rl) permissions are required.
-RECORDINGS_CONTAINER_URI = "<Your SAS Uri to a container of audio files>"
+RECORDINGS_CONTAINER_URI = args.recordings_container_uri
 
 # Set model information when doing transcription with custom models
 MODEL_REFERENCE = None  # guid of a custom model
 
 
-def transcribe_from_single_blob(uri, properties):
+def transcribe_from_single_blob(uris, properties):
     """
-    Transcribe a single audio file located at `uri` using the settings specified in `properties`
+    Transcribe batch audio files located at `uris` using the settings specified in `properties`
     using the base model for the specified locale.
     """
     transcription_definition = swagger_client.Transcription(
         display_name=NAME,
         description=DESCRIPTION,
         locale=LOCALE,
-        content_urls=[url for url in uri.split(",")],
+        content_urls=[uri.strip() for uri in uris.split(",")],
         properties=properties
     )
 
     return transcription_definition
 
 
-def transcribe_with_custom_model(client, uri, properties):
+def transcribe_with_custom_model(client, uris, properties):
     """
-    Transcribe a single audio file located at `uri` using the settings specified in `properties`
+    Transcribe batch audio files located at `uris` using the settings specified in `properties`
     using the base model for the specified locale.
     """
     # Model information (ADAPTED_ACOUSTIC_ID and ADAPTED_LANGUAGE_ID) must be set above.
@@ -84,7 +102,7 @@ def transcribe_with_custom_model(client, uri, properties):
         display_name=NAME,
         description=DESCRIPTION,
         locale=LOCALE,
-        content_urls=[uri],
+        content_urls=[uri.strip() for uri in uris.split(",")],
         model=model,
         properties=properties
     )
@@ -178,10 +196,10 @@ def transcribe():
     # properties.language_identification = swagger_client.LanguageIdentificationProperties(mode="single", candidate_locales=["en-US", "ja-JP"])
 
     # Use base models for transcription. Comment this block if you are using a custom model.
-    transcription_definition = transcribe_from_single_blob(RECORDINGS_BLOB_URI, properties)
+    transcription_definition = transcribe_from_single_blob(RECORDINGS_BLOB_URIS, properties)
 
     # Uncomment this block to use custom models for transcription.
-    # transcription_definition = transcribe_with_custom_model(client, RECORDINGS_BLOB_URI, properties)
+    # transcription_definition = transcribe_with_custom_model(client, RECORDINGS_BLOB_URIS, properties)
 
     # uncomment the following block to enable and configure language identification prior to transcription
     # Uncomment this block to transcribe all files from a container.

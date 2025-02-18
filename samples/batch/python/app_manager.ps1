@@ -10,9 +10,11 @@ if ($action -eq "build") {
     }
 
     # Check if the swagger_client is already installed
-    $moduleCheck = & python -c "import swagger_client" 2>&1
+    packageName = "swagger_client"
+    $moduleCheck = & python -c "import $packageName" 2>&1
     if ($LASTEXITCODE -ne 0) {
-        & pip install .\python-api-client-library\python-client
+        Write-Host "$packageName is not installed. Please follow the guide in README.md to install. Exiting..." -ForegroundColor Red
+        exit 1
     }
 
     pip install requests
@@ -32,23 +34,37 @@ elseif ($action -eq "run") {
                 $value = $parts[1].Trim()
 
                 # Set the environment variable
-                [System.Environment]::SetEnvironmentVariable($key, $value)
+                Set-Item -Path "Env:$key" -Value $value
             }
-
-            [System.Environment]::SetEnvironmentVariable("SPEECH_KEY", $env:SPEECH_RESOURCE_KEY)
-            [System.Environment]::SetEnvironmentVariable("SPEECH_REGION", $env:SERVICE_REGION)
         }
 
         Write-Host "Environment variables loaded from $envFilePath"
-    }
-    else {
+    } else {
         Write-Host "File not found: $envFilePath. You can create one to set environment variables or manually set secrets in environment variables."
     }
 
-    $recordingsBlobUri = Read-Host "Please enter SAS URI pointing to audio files stored in Azure Blob Storage. If input multiple, please separate them with commas"
-    if ([string]::IsNullOrWhiteSpace($recordingsBlobUri)) {
-        Write-Host "Not enter the Azure Blob SAS URL of the input audio file." -ForegroundColor Red
+    $useBlobUrisOrContainerUri = Read-Host "Do you want to use RecordingsBlobUris [y] or RecordingsContainerUri [n]? Please enter y/n"
+    if ($useBlobUrisOrContainerUri -match "^[yY]$") {
+        $choice = 0
+    } elseif ($useBlobUrisOrContainerUri -match "^[nN]$") {
+        $choice = 1
+    } else {
+        Write-Host "Invalid input. Exiting..." -ForegroundColor Red
         exit 1
+    }
+
+    if ($choice -eq 0) {
+        $recordingsBlobUris = Read-Host "Please enter SAS URI pointing to audio files stored in Azure Blob Storage. If input multiple, please separate them with commas"
+        if ([string]::IsNullOrWhiteSpace($recordingsBlobUris)) {
+            Write-Host "Not enter the Azure Blob SAS URL of the input audio file." -ForegroundColor Red
+            exit 1
+        }
+    } else {
+        $recordingsContainerUri = Read-Host "Please enter the SAS URI of the container in Azure Blob Storage where the audio files are stored"
+        if ([string]::IsNullOrWhiteSpace($recordingsContainerUri)) {
+            Write-Host "Not enter the Azure Blob Container SAS URI of the input audio file." -ForegroundColor Red
+            exit 1
+        }
     }
 
     $recordingsLocale = Read-Host "Please enter the locale of the input audio file (e.g. en-US, zh-CN, etc.)"
@@ -59,7 +75,17 @@ elseif ($action -eq "run") {
 
     $pythonVersion = python --version 2>&1
     if ($pythonVersion -like "Python 3*") {
-        & python .\python-client\main.py --recordings_blob_uri $recordingsBlobUri --locale  $recordingsLocale
+        $args = @("--service_key", "$env:SPEECH_RESOURCE_KEY",
+          "--service_region", "$env:SERVICE_REGION",
+          "--locale", "$recordingsLocale")
+
+        if ($choice -eq 0) {
+            $args += @("--recordings_blob_uris", "$recordingsBlobUris")
+        } else {
+            $args += @("--recordings_container_uri", "$recordingsContainerUri")
+        }
+
+        & python .\python-client\main.py @args
     }
     else {
         Write-Host "Python 3 is not installed. Please install python3 first. Exiting..." -ForegroundColor Red
