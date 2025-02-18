@@ -10,7 +10,7 @@ if ($action -eq "build") {
     }
 
     # Check if the swagger_client is already installed
-    packageName = "swagger_client"
+    $packageName = "swagger_client"
     $moduleCheck = & python -c "import $packageName" 2>&1
     if ($LASTEXITCODE -ne 0) {
         Write-Host "$packageName is not installed. Please follow the guide in README.md to install. Exiting..." -ForegroundColor Red

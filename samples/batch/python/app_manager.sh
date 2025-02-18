@@ -17,7 +17,8 @@ if [ "$action" == "build" ]; then
         exit 1
     fi
 
-    python -c "import swagger_client" 2>/dev/null
+    packageName="swagger_client"
+    python -c "import $packageName" 2>/dev/null
     if [ $? -ne 0 ]; then
         echo -e "$packageName is not installed. Please follow the guide in README.md to install. Exiting..."
         exit 1
