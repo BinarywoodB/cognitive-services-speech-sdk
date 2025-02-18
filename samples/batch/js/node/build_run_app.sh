@@ -47,7 +47,7 @@ elif [ "$action" == "run" ]; then
         echo "File not found: $envFilePath. You can create one to set environment variables or manually set secrets."
     fi
 
-    read -p "Do you want to use RecordingsBlobUris [y/Y] or RecordingsContainerUri [n/N]? Please enter y/Y or n/N: " useBlobUrisOrContainerUri
+    read -p "Do you want to use RecordingsBlobUris [y] or RecordingsContainerUri [n]? Please enter y/N: " useBlobUrisOrContainerUri
     if [[ "$useBlobUrisOrContainerUri" =~ ^[yY]$ ]]; then
         choice=0
     elif [[ "$useBlobUrisOrContainerUri" =~ ^[nN]$ ]]; then
