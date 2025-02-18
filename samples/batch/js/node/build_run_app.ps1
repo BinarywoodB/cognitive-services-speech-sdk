@@ -9,7 +9,15 @@ if ($action -eq "build") {
         exit 1
     }
 
-    npm install
+    $packageName = "javascript-client"
+    $installed = npm list --depth=0 | Select-String $packageName
+    $globalInstalled = npm list -g --depth=0 | Select-String $packageName
+    if (-not $installed -and -not $globalInstalled) {
+        Write-Host "$packageName is not installed. Please follow the guide in README.md to install." -ForegroundColor Red
+        exit 1
+    }
+
+    npm install system-sleep request yargs
 }
 elseif ($action -eq "run") {
     # Define the path to your .env file
@@ -26,23 +34,37 @@ elseif ($action -eq "run") {
                 $value = $parts[1].Trim()
 
                 # Set the environment variable
-                [System.Environment]::SetEnvironmentVariable($key, $value)
+                Set-Item -Path "Env:$key" -Value $value
             }
-
-            [System.Environment]::SetEnvironmentVariable("SPEECH_KEY", $env:SPEECH_RESOURCE_KEY)
-            [System.Environment]::SetEnvironmentVariable("SPEECH_REGION", $env:SERVICE_REGION)
         }
 
         Write-Host "Environment variables loaded from $envFilePath"
-    }
-    else {
+    } else {
         Write-Host "File not found: $envFilePath. You can create one to set environment variables or manually set secrets in environment variables."
     }
 
-    $recordingsBlobUri = Read-Host "Please enter SAS URI pointing to audio files stored in Azure Blob Storage. If input multiple, please separate them with commas"
-    if ([string]::IsNullOrWhiteSpace($recordingsBlobUri)) {
-        Write-Host "Not enter the Azure Blob SAS URL of the input audio file." -ForegroundColor Red
+    $useBlobUrisOrContainerUri = Read-Host "Do you want to use RecordingsBlobUris [y/Y] or RecordingsContainerUri [n/N]? Please enter y/Y or n/N"
+    if ($useBlobUrisOrContainerUri -match "^[yY]$") {
+        $choice = 0
+    } elseif ($choice -match "^[nN]$") {
+        $choice = 1
+    } else {
+        Write-Host "Invalid input. Exiting..." -ForegroundColor Red
         exit 1
+    }
+
+    if ($choice -eq 0) {
+        $recordingsBlobUris = Read-Host "Please enter SAS URI pointing to audio files stored in Azure Blob Storage. If input multiple, please separate them with commas"
+        if ([string]::IsNullOrWhiteSpace($recordingsBlobUris)) {
+            Write-Host "Not enter the Azure Blob SAS URL of the input audio file." -ForegroundColor Red
+            exit 1
+        }
+    } else {
+        $recordingsContainerUri = Read-Host "Please enter the SAS URI of the container in Azure Blob Storage where the audio files are stored"
+        if ([string]::IsNullOrWhiteSpace($recordingsContainerUri)) {
+            Write-Host "Not enter the Azure Blob Container SAS URI of the input audio file." -ForegroundColor Red
+            exit 1
+        }
     }
 
     $recordingsLocale = Read-Host "Please enter the locale of the input audio file (e.g. en-US, zh-CN, etc.)"
@@ -53,14 +75,21 @@ elseif ($action -eq "run") {
 
     $nodeVersion = & node -v 2>$null
     if ($LASTEXITCODE -eq 0) {
-        & node .\main.js --recordings_blob_uri $recordingsBlobUri --locale $recordingsLocale
-    }
-    else {
+        $args = @("--service_key", "$env:SPEECH_RESOURCE_KEY",
+          "--service_region", "$env:SERVICE_REGION",
+          "--locale", "$recordingsLocale")
+
+        if ($choice -eq 0) {
+            $args += @("--recordings_blob_uris", "$recordingsBlobUris")
+        } else {
+            $args += @("--recordings_container_uri", "$recordingsContainerUri")
+        }
+        & node .\main.js @args
+    } else {
         Write-Host "Node.js is not installed. Please install Node.js first. Exiting..." -ForegroundColor Red
         exit 1
     }
-}
-else {
+} else {
     Write-Host "Invalid action: $action" -ForegroundColor Red
     Write-Host "Usage: build or run"
     exit 1
