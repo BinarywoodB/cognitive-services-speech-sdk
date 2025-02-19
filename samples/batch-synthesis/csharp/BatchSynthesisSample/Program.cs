@@ -13,7 +13,7 @@ string speechKey = Environment.GetEnvironmentVariable("SPEECH_KEY")
 
 string apiVersion = "2024-04-01";
 var host = $"https://{speechRegion}.api.cognitive.microsoft.com";
-var sampleScript = await File.ReadAllTextAsync("../../Gatsby-chapter1.txt").ConfigureAwait(false);
+var sampleScript = await File.ReadAllTextAsync("./Gatsby-chapter1.txt").ConfigureAwait(false);
 
 var synthesisClient = new BatchSynthesisClient(host, speechKey, apiVersion);
 
