@@ -11,6 +11,7 @@ import sys
 import requests
 import time
 import swagger_client
+import re
 
 logging.basicConfig(stream=sys.stdout, level=logging.DEBUG,
         format="%(asctime)s %(message)s", datefmt="%m/%d/%Y %I:%M:%S %p %Z")
@@ -233,6 +234,9 @@ def transcribe():
                 logging.info("Transcription succeeded. Results are located in your Azure Blob Storage.")
                 break
 
+            # download results
+            os.makedirs('results', exist_ok=True)
+
             pag_files = api.transcriptions_list_files(transcription_id, api_version=API_VERSION)
             for file_data in _paginate(api, pag_files):
                 if file_data.kind != "Transcription":
@@ -241,7 +245,14 @@ def transcribe():
                 audiofilename = file_data.name
                 results_url = file_data.links.content_url
                 results = requests.get(results_url)
-                logging.info(f"Results for {audiofilename}:\n{results.content.decode('utf-8')}")
+                result_text = results.content.decode('utf-8')
+
+                # save results to file
+                safe_audiofilename = re.sub(r'[<>:"/\\|?*\x00-\x1F]', '_', audiofilename)
+                result_file_path = os.path.join('results', safe_audiofilename)
+                with open(result_file_path, 'w', encoding='utf-8') as f:
+                    f.write(result_text)
+                    logging.info(f"Results saved to {result_file_path}")
         elif transcription.status == "Failed":
             logging.info(f"Transcription failed: {transcription.properties.error.message}")
 

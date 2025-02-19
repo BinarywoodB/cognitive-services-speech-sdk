@@ -2,7 +2,7 @@ param(
     [string]$action
 )
 
-if ($action -eq "build") {
+if ($action -eq "configure") {
     $pythonVersion = python --version 2>&1
     if (-not $pythonVersion -like "Python 3*") {
         Write-Host "Python 3 is not installed. Please install python3 first. Exiting..." -ForegroundColor Red
@@ -92,6 +92,6 @@ elseif ($action -eq "run") {
 }
 else {
     Write-Host "Invalid action: $action" -ForegroundColor Red
-    Write-Host "Usage: build or run"
+    Write-Host "Usage: configure or run"
     exit 1
 }

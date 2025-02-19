@@ -17,20 +17,8 @@ Follow these steps for the installation:
 
 ## Prerequisites
 
-- **recordings_blob_uris** (Azure Blob Storage SAS URI pointing to audio files) or **recordings_container_uri** (Azure Blob Storage Container SAS URI that stored audio files). You can upload your local audio or recording files to your Azure blob storage. Of course, you can also download the example en-US audio files from [sample audio files](https://github.com/Azure-Samples/cognitive-services-speech-sdk/tree/master/sampledata/audiofiles) and then upload it to your Azure blob storage.
-- The **locale** (e.g. en-US, zh-CN, etc.) of the audio file.
-
-## Tips
-
-The sample code default use `recordings_blob_uris` parameter, if you want to use `recordings_container_uri` parameter, please comment out 
-```python
-transcription_definition = transcribe_from_single_blob(RECORDINGS_BLOB_URIS, properties)
-```
-and uncomment
-```python
-# transcription_definition = transcribe_from_container(RECORDINGS_CONTAINER_URI, properties)
-```
-in **python-client/main.py**.
+- **recordings_blob_uris** (Azure Blob Storage SAS URI pointing to audio files) or **recordings_container_uri** (Azure Blob Storage Container SAS URI that stored audio files). You can upload your local audio or recording files to Azure Blob Storage. Alternatively, you can download example en-US audio files from [sample audio files](https://github.com/Azure-Samples/cognitive-services-speech-sdk/tree/master/sampledata/audiofiles) and then upload it to your Azure blob storage.
+- The **locale** of the audio file (e.g. en-US, zh-CN, etc.).
 
 ## Run the Sample within VS Code
 1. Install [Azure AI Speech Toolkit](https://marketplace.visualstudio.com/items?itemName=ms-azureaispeech.azure-ai-speech-toolkit) extension in VS Code.
@@ -39,3 +27,21 @@ in **python-client/main.py**.
 4. Trigger `Azure AI Speech Toolkit: Configure and Setup the Sample App` command from command palette to configure and setup the sample. This command only needs to be run once.
 5. Trigger `Azure AI Speech Toolkit: Build the Sample App` command from command palette to build the sample.
 6. Trigger `Azure AI Speech Toolkit: Run the Sample App` command from command palette to run the sample.
+
+## Advanced Usage
+
+By default, the sample code uses the `recordings_blob_uris` parameter. You can specify either a single recording file blob URL or multiple URLs, separated by commas.
+
+If you prefer to use the `recordings_container_uri` parameter, follow these steps:
+
+1. In  **python-client/main.py**, comment out the following line:
+    ```python
+    transcription_definition = transcribe_from_single_blob(RECORDINGS_BLOB_URIS, properties)
+    ```
+
+2. Uncomment the following line:
+    ```python
+    # transcription_definition = transcribe_from_container(RECORDINGS_CONTAINER_URI, properties)
+    ```
+3. Rebuild the program using the `Azure AI Speech Toolkit: Build the Sample App` command.
+4. Run the sample with `Azure AI Speech Toolkit: Run the Sample App`. Ensure that the SAS URI for the container has `Read` and `List` permissions.

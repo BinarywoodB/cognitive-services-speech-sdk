@@ -6,11 +6,11 @@ action="$1"
 
 # Check if the correct number of arguments is provided
 if [ "$#" -lt 1 ]; then
-    echo "Usage: $0 {build|run}"
+    echo "Usage: $0 {configure|run}"
     exit 1
 fi
 
-if [ "$action" == "build" ]; then
+if [ "$action" == "configure" ]; then
     command -v python3 >/dev/null 2>&1
     if [ $? -ne 0 ]; then
         echo "Python 3 is not found. Please install python3 first. Exiting..."
@@ -86,6 +86,6 @@ elif [ "$action" == "run" ]; then
     fi
 else
     echo "Invalid action: $action"
-    echo "Usage: $0 {build|run}"
+    echo "Usage: $0 {configure|run}"
     exit 1
 fi
