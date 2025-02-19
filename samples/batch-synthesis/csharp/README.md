@@ -13,7 +13,7 @@ If you are running the sample **without** the [Azure AI Speech Toolkit](https://
 * `SPEECH_KEY`: Your speech resource key.
 * `SPEECH_REGION`: Your speech resource region.
 
-## Advance Usage
+## Advanced Usage
 
 Update the initialization code to support extra features:
 * (Optional) The relationship between custom voice names and deployment ID, if you want to use custom voices.
