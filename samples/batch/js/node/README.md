@@ -2,7 +2,7 @@
 
 ## Download and install the API client library
 
-To execute the sample you need to generate the Javascript library for the REST API which is generated through [Swagger](swagger.io).
+To execute the sample you need to generate the Javascript library for the REST API which is generated through Swagger.
 
 Follow these steps for the installation:
 
@@ -15,32 +15,28 @@ Follow these steps for the installation:
 1. Install the extracted javascript-client module in your nodejs environment using npm
 `npm install installpath/to/package/javascript-client`
 
+## Prerequisites
 
-## Install other dependencies
+- **recordings_blob_uris** (Azure Blob Storage SAS URI pointing to audio files) or **recordings_container_uri** (Azure Blob Storage Container SAS URI that stored audio files). You can upload your local audio or recording files to your Azure blob storage. Of course, you can also download the example en-US audio files from [sample audio files](https://github.com/Azure-Samples/cognitive-services-speech-sdk/tree/master/sampledata/audiofiles) and then upload it to your Azure blob storage.
+- The **locale** (e.g. en-US, zh-CN, etc.) of the audio file.
 
-The sample uses the `requests` and `system-sleep` library. You can install it with the command
+## Tips
 
-```bash
-npm install system-sleep
-npm install request
+The sample code default use `recordings_blob_uris` parameter, if you want to use `recordings_container_uri` parameter, please comment out 
+```js
+var opts = _transcribeFromSingleBlob(RECORDINGS_BLOB_URIS);
+``` 
+and uncomment
+```js
+// var opts = _transcribeFromContainer(RECORDINGS_CONTAINER_URI);
 ```
+in **main.js**.
 
-## Locally modify the Swagger client for the issue related to 'File'
-Modified node_modules/speech_to_text_api_v30/src/model/PaginatedFiles.constructFromObject as it was throwing an error reference File not found.
+## Run the Sample within VS Code
 
-```bash
-Was : obj.values = ApiClient.convertToType(data['values'], [File]);
-Now : obj.values = ApiClient.convertToType(data['values'], ['File']);
-```
-
-## Run the sample code
-
-The sample code itself is [main.js] and can be run using Node.js 3.0 or higher.
-You will need to adapt the following information to run the sample:
-
-1. Your subscription key and region.
-1. The URI of an audio recording in blob storage.
-1. (Optional:) The URI of a container with audio files if you want to transcribe all of them with a single request.
-
-You can use a development environment like Visual Studio Code to edit, debug, and execute the sample.
-
+1. Install "Azure AI Speech Toolkit" extension in VS Code.
+2. Download this sample from sample gallery to local machine.
+3. Trigger "Azure AI Speech Toolkit: Configure Azure Speech Resources" command from command palette to select speech resource.
+4. Trigger "Azure AI Speech Toolkit: Configure and Setup the Sample App" command from command palette to configure and setup the sample. This command only needs to be run once.
+5. Trigger "Azure AI Speech Toolkit: Build the Sample App" command from command palette to build the sample.
+6. Trigger "Azure AI Speech Toolkit: Run the Sample App" command from command palette to run the sample.

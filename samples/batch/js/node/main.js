@@ -10,21 +10,54 @@
 
   // Create API Instance
   var apiInstance = new SpeechToTextApiV30.DefaultApi();
-  // Your subscription key and region for the speech service
 
-  var API_KEY=""
-  var NAME = "Simple transcription"
-  var DESCRIPTION = "Simple transcription description"
-  var LOCALE = "en-US"
+  const yargs = require("yargs");
+  const argv = yargs
+    .option("service_key", {
+      describe: "The subscription key if the speech service",
+      type: "string",
+      demandOption: true,
+    })
+    .option("service_region", {
+      describe: "The region for the speech service",
+      type: "string",
+      demandOption: true,
+    })
+    .option("recordings_blob_uris", {
+      describe: "URIs of the recording blob",
+      type: "string",
+      demandOption: false,
+      default: "",
+    })
+    .option("recordings_container_uri", {
+      describe: "SAS URI pointing to a container in Azure Blob Storage",
+      type: "string",
+      demandOption: false,
+      default: "",
+    })
+    .option("locale", {
+      describe: "Locale of the recording",
+      type: "string",
+      demandOption: true,
+    })
+    .help()
+    .argv;
+
+  // Your subscription key and region for the speech service
+  var API_KEY = argv.service_key;
   // provide the service region
-  var SERVICE_REGION = "your service region"
+  var SERVICE_REGION = argv.service_region;
   var DEFAULTPATH = 'https://'+SERVICE_REGION+'.api.cognitive.microsoft.com/speechtotext/v3.0'
 
+  var LOCALE = argv.locale
   // Provide the SAS URI of the audio file stored in Azure Blob Storage
-  var RECORDINGS_BLOB_URI = ""
+  var RECORDINGS_BLOB_URIS = argv.recordings_blob_uris
+
+  var NAME = "Simple transcription"
+  var DESCRIPTION = "Simple transcription description"
 
   // Provide the SAS URI pointing to a container in Azure Blob Storage for transcribing all of them with a single request
-  var RECORDINGS_CONTAINER_URI = ""
+  var RECORDINGS_CONTAINER_URI = argv.recordings_container_uri
   var callbackGetTrans = function(error, data, response) {
     if (error) {
       console.error(error);
@@ -91,7 +124,7 @@
     defaultClient.basePath = DEFAULTPATH;
 
     // transcribe one file. - only one method of transcription can be used- _transcribeFromSingleBlob or _transcribeFromContainer
-    var opts = _transcribeFromSingleBlob(RECORDINGS_BLOB_URI);
+    var opts = _transcribeFromSingleBlob(RECORDINGS_BLOB_URIS);
 
     // Uncomment this block to transcribe all files from a container. Comment the previous block - _transcribeFromSingleBlob when this is uncommented
     // var opts = _transcribeFromContainer(RECORDINGS_CONTAINER_URI);
@@ -169,13 +202,13 @@
     return opts;
   }
 
-  function _transcribeFromSingleBlob(uri){
+  function _transcribeFromSingleBlob(uris){
     var opts = { 
       // Transcription | The details of the new transcription.
       'transcription' : new SpeechToTextApiV30.Transcription()
     }  
     opts.transcription = {
-      "contentUrls": [uri],
+      "contentUrls": uris.split(",").map(uri => uri.trim()),
       "properties": {
         "wordLevelTimestampsEnabled": true
       },
