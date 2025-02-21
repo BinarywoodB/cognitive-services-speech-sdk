@@ -2,7 +2,7 @@
 // README at: https://github.com/devcontainers/templates/tree/main/src/python
 {
     "name": "sample-python-web-avatar",
-    "image": "mcr.microsoft.com/devcontainers/python:3.11-bullseye",
+    "image": "mcr.microsoft.com/devcontainers/typescript-node:16",
     "workspaceFolder": "/workspaces/cognitive-services-speech-sdk/samples/python/web/avatar/",
     "customizations": {
         "vscode": {
@@ -17,5 +17,5 @@
         "version": "latest"
       }
     },
-    "remoteUser": "root"
+    "remoteUser": "node"
 }
