@@ -31,8 +31,6 @@ else
     synthesisClient = new BatchSynthesisClient(host, speechKey, apiVersion);
 }
 
-string apiVersion = "2024-04-01";
-var host = $"https://{speechRegion}.api.cognitive.microsoft.com";
 var sampleScript = await File.ReadAllTextAsync("./Gatsby-chapter1.txt").ConfigureAwait(false);
 
 // Get all synthesis jobs.
