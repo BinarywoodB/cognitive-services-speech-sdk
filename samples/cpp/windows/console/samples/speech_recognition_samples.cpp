@@ -12,6 +12,11 @@
 #include "wav_file_reader.h"
 #include <vector>
 #include <future>
+#include <curl/curl.h>
+#include <iostream>
+#include <sstream>
+#include <string>
+#include <iomanip>
 
 using namespace std;
 using namespace Microsoft::CognitiveServices::Speech;
@@ -22,9 +27,9 @@ using namespace Microsoft::CognitiveServices::Speech::Audio;
 void SpeechRecognitionWithMicrophone()
 {
     // <SpeechRecognitionWithMicrophone>
-    // Creates an instance of a speech config with specified subscription key and service region.
-    // Replace with your own subscription key and service region (e.g., "westus").
-    auto config = SpeechConfig::FromSubscription("YourSubscriptionKey", "YourServiceRegion");
+    // Creates an instance of a speech config with specified endpoint and subscription key.
+    // Replace with your own endpoint and subscription key.
+    auto config = SpeechConfig::FromEndpoint("https://YourServiceRegion.api.cognitive.microsoft.com", "YourSubscriptionKey");
 
     // Creates a speech recognizer using microphone as audio input. The default language is "en-us".
     auto recognizer = SpeechRecognizer::FromConfig(config);
@@ -66,9 +71,9 @@ void SpeechRecognitionWithMicrophone()
 // Speech recognition in the specified language, using microphone, and requesting detailed output format.
 void SpeechRecognitionWithLanguageAndUsingDetailedOutputFormat()
 {
-    // Creates an instance of a speech config with specified subscription key and service region.
-    // Replace with your own subscription key and service region (e.g., "westus").
-    auto config = SpeechConfig::FromSubscription("YourSubscriptionKey", "YourServiceRegion");
+    // Creates an instance of a speech config with specified endpoint and subscription key.
+    // Replace with your own endpoint and subscription key.
+    auto config = SpeechConfig::FromEndpoint("https://YourServiceRegion.api.cognitive.microsoft.com", "YourSubscriptionKey");
 
     // Request for detailed recognition result
     config->SetOutputFormat(OutputFormat::Detailed);
@@ -96,7 +101,7 @@ void SpeechRecognitionWithLanguageAndUsingDetailedOutputFormat()
     // Checks result.
     if (result->Reason == ResultReason::RecognizedSpeech)
     {
-        cout << "RECOGNIZED: Text = " << result->Text << std::endl;
+        cout << "RECOGNIZED: Text=" << result->Text << std::endl;
 
         // Time units are in hundreds of nanoseconds (HNS), where 10000 HNS equals 1 millisecond
         cout << "Offset: " << result->Offset() << std::endl
@@ -151,9 +156,9 @@ void SpeechRecognitionWithLanguageAndUsingDetailedOutputFormat()
 void SpeechContinuousRecognitionWithFile()
 {
     // <SpeechContinuousRecognitionWithFile>
-    // Creates an instance of a speech config with specified subscription key and service region.
-    // Replace with your own subscription key and service region (e.g., "westus").
-    auto config = SpeechConfig::FromSubscription("YourSubscriptionKey", "YourServiceRegion");
+    // Creates an instance of a speech config with specified endpoint and subscription key.
+    // Replace with your own endpoint and subscription key.
+    auto config = SpeechConfig::FromEndpoint("https://YourServiceRegion.api.cognitive.microsoft.com", "YourSubscriptionKey");
 
     // Creates a speech recognizer using file as audio input.
     // Replace with your own audio file name.
@@ -166,7 +171,7 @@ void SpeechContinuousRecognitionWithFile()
     // Subscribes to events.
     recognizer->Recognizing.Connect([] (const SpeechRecognitionEventArgs& e)
     {
-        cout << "Recognizing:" << e.Result->Text << std::endl;
+        cout << "Recognizing: Text=" << e.Result->Text << std::endl;
     });
 
     recognizer->Recognized.Connect([] (const SpeechRecognitionEventArgs& e)
@@ -197,9 +202,14 @@ void SpeechContinuousRecognitionWithFile()
         }
     });
 
+    recognizer->SessionStarted.Connect([&recognitionEnd](const SessionEventArgs& e)
+    {
+        cout << "Session started." << std::endl;
+    });
+
     recognizer->SessionStopped.Connect([&recognitionEnd](const SessionEventArgs& e)
     {
-        cout << "Session stopped.";
+        cout << "Session stopped." << std::endl;
         recognitionEnd.set_value(); // Notify to stop recognition.
     });
 
@@ -218,9 +228,9 @@ void SpeechContinuousRecognitionWithFile()
 void SpeechRecognitionUsingCustomizedModel()
 {
     // <SpeechRecognitionUsingCustomizedModel>
-    // Creates an instance of a speech config with specified subscription key and service region.
-    // Replace with your own subscription key and service region (e.g., "westus").
-    auto config = SpeechConfig::FromSubscription("YourSubscriptionKey", "YourServiceRegion");
+    // Creates an instance of a speech config with specified endpoint and subscription key.
+    // Replace with your own endpoint and subscription key.
+    auto config = SpeechConfig::FromEndpoint("https://YourServiceRegion.api.cognitive.microsoft.com", "YourSubscriptionKey");
     // Set the endpoint ID of your customized model
     // Replace with your own CRIS endpoint ID.
     config->SetEndpointId("YourEndpointId");
@@ -299,9 +309,9 @@ void SpeechContinuousRecognitionWithPullStream()
         WavFileReader m_reader;
     };
 
-    // Creates an instance of a speech config with specified subscription key and service region.
-    // Replace with your own subscription key and service region (e.g., "westus").
-    auto config = SpeechConfig::FromSubscription("YourSubscriptionKey", "YourServiceRegion");
+    // Creates an instance of a speech config with specified endpoint and subscription key.
+    // Replace with your own endpoint and subscription key.
+    auto config = SpeechConfig::FromEndpoint("https://YourServiceRegion.api.cognitive.microsoft.com", "YourSubscriptionKey");
 
     // Creates a callback that will read audio data from a WAV file.
     // Currently, the only supported WAV format is mono(single channel), 16 kHZ sample rate, 16 bits per sample.
@@ -319,7 +329,7 @@ void SpeechContinuousRecognitionWithPullStream()
     // Subscribes to events.
     recognizer->Recognizing.Connect([](const SpeechRecognitionEventArgs& e)
     {
-        cout << "Recognizing:" << e.Result->Text << std::endl;
+        cout << "Recognizing: Text=" << e.Result->Text << std::endl;
     });
 
     recognizer->Recognized.Connect([] (const SpeechRecognitionEventArgs& e)
@@ -355,9 +365,14 @@ void SpeechContinuousRecognitionWithPullStream()
         }
     });
 
+    recognizer->SessionStarted.Connect([&recognitionEnd](const SessionEventArgs& e)
+    {
+        cout << "Session started." << std::endl;
+    });
+
     recognizer->SessionStopped.Connect([&recognitionEnd](const SessionEventArgs& e)
     {
-        cout << "Session stopped.";
+        cout << "Session stopped." << std::endl;
         recognitionEnd.set_value(); // Notify to stop recognition.
     });
 
@@ -373,9 +388,9 @@ void SpeechContinuousRecognitionWithPullStream()
 
 void SpeechContinuousRecognitionWithPushStream()
 {
-    // Creates an instance of a speech config with specified subscription key and service region.
-    // Replace with your own subscription key and service region (e.g., "westus").
-    auto config = SpeechConfig::FromSubscription("YourSubscriptionKey", "YourServiceRegion");
+    // Creates an instance of a speech config with specified endpoint and subscription key.
+    // Replace with your own endpoint and subscription key.
+    auto config = SpeechConfig::FromEndpoint("https://YourServiceRegion.api.cognitive.microsoft.com", "YourSubscriptionKey");
 
     // Creates a push stream
     auto pushStream = AudioInputStream::CreatePushStream();
@@ -390,7 +405,7 @@ void SpeechContinuousRecognitionWithPushStream()
     // Subscribes to events.
     recognizer->Recognizing.Connect([](const SpeechRecognitionEventArgs& e)
     {
-        cout << "Recognizing:" << e.Result->Text << std::endl;
+        cout << "Recognizing: Text=" << e.Result->Text << std::endl;
     });
 
     recognizer->Recognized.Connect([](const SpeechRecognitionEventArgs& e)
@@ -427,9 +442,14 @@ void SpeechContinuousRecognitionWithPushStream()
 
     });
 
+    recognizer->SessionStarted.Connect([&recognitionEnd](const SessionEventArgs& e)
+    {
+        cout << "Session started." << std::endl;
+    });
+
     recognizer->SessionStopped.Connect([&recognitionEnd](const SessionEventArgs& e)
     {
-        cout << "Session stopped.";
+        cout << "Session stopped." << std::endl;
         recognitionEnd.set_value(); // Notify to stop recognition.
     });
 
@@ -461,9 +481,9 @@ void SpeechContinuousRecognitionWithPushStream()
 // Keyword-triggered speech recognition using microphone.
 void KeywordTriggeredSpeechRecognitionWithMicrophone()
 {
-    // Creates an instance of a speech config with specified subscription key and service region.
-    // Replace with your own subscription key and service region (e.g., "westus").
-    auto config = SpeechConfig::FromSubscription("YourSubscriptionKey", "YourServiceRegion");
+    // Creates an instance of a speech config with specified endpoint and subscription key.
+    // Replace with your own endpoint and subscription key.
+    auto config = SpeechConfig::FromEndpoint("https://YourServiceRegion.api.cognitive.microsoft.com", "YourSubscriptionKey");
 
     // Creates a speech recognizer using microphone as audio input. The default language is "en-us".
     auto recognizer = SpeechRecognizer::FromConfig(config);
@@ -547,10 +567,9 @@ void KeywordTriggeredSpeechRecognitionWithMicrophone()
 // Pronunciation assessment.
 void PronunciationAssessmentWithMicrophone()
 {
-    // Creates an instance of a speech config with specified subscription key and service region.
-    // Replace with your own subscription key and service region (e.g., "westus").
-    // Note: The pronunciation assessment feature is currently only available on en-US language.
-    auto config = SpeechConfig::FromSubscription("YourSubscriptionKey", "YourServiceRegion");
+    // Creates an instance of a speech config with specified endpoint and subscription key.
+    // Replace with your own endpoint and subscription key.
+    auto config = SpeechConfig::FromEndpoint("https://YourServiceRegion.api.cognitive.microsoft.com", "YourSubscriptionKey");
 
     // The pronunciation assessment service has a longer default end silence timeout (5 seconds) than normal STT
     // as the pronunciation assessment is widely used in education scenario where kids have longer break in reading.
@@ -667,9 +686,9 @@ void PronunciationAssessmentWithStreamInternalAsync(shared_ptr<SpeechConfig> spe
 // See more information at https://aka.ms/csspeech/pa
 void PronunciationAssessmentWithStream()
 {
-    // Creates an instance of a speech config with specified subscription key and service region.
-    // Replace with your own subscription key and service region (e.g., "westus").
-    auto config = SpeechConfig::FromSubscription("YourSubscriptionKey", "YourServiceRegion");
+    // Creates an instance of a speech config with specified endpoint and subscription key.
+    // Replace with your own endpoint and subscription key.
+    auto config = SpeechConfig::FromEndpoint("https://YourServiceRegion.api.cognitive.microsoft.com", "YourSubscriptionKey");
 
     // Read audio data from file. In real scenario this can be from memory or network
     std::ifstream file("whatstheweatherlike.wav", std::ios::binary | std::ios::ate);
@@ -701,9 +720,9 @@ void PronunciationAssessmentWithStream()
 // Pronunciation assessment configured with json
 void PronunciationAssessmentConfiguredWithJson()
 {
-    // Creates an instance of a speech config with specified subscription key and service region.
-    // Replace with your own subscription key and service region (e.g., "westus").
-    auto config = SpeechConfig::FromSubscription("YourSubscriptionKey", "YourServiceRegion");
+    // Creates an instance of a speech config with specified endpoint and subscription key.
+    // Replace with your own endpoint and subscription key.
+    auto config = SpeechConfig::FromEndpoint("https://YourServiceRegion.api.cognitive.microsoft.com", "YourSubscriptionKey");
 
     // Creates a speech recognizer from an audio file
     auto audioConfig = AudioConfig::FromWavFileInput("whatstheweatherlike.wav");
@@ -760,23 +779,101 @@ void PronunciationAssessmentConfiguredWithJson()
     }
 }
 
+// Callback function for writing response data
+size_t WriteCallback(void* contents, size_t size, size_t nmemb, std::string* output) {
+    size_t totalSize = size * nmemb;
+    output->append((char*)contents, totalSize);
+    return totalSize;
+}
+
+std::string GetChatCompletion(const std::string& oaiResourceName, const std::string& oaiDeploymentName, const std::string& oaiApiVersion, const std::string& oaiApiKey, const std::string& sendText) {
+    using json = nlohmann::json;
+
+    CURL* curl;
+    CURLcode res;
+    std::string sampleSentence1 = "OK the movie i like to talk about is the cove it is very say phenomenal sensational documentary about adopting hunting practices in japan i think the director is called well i think the name escapes me anyway but well let's talk about the movie basically it's about dolphin hunting practices in japan there's a small village where where villagers fisherman Q almost twenty thousand dolphins on a yearly basis which is brutal and just explain massacre this book has influenced me a lot i still remember the first time i saw this movie i think it was in middle school one of my teachers showed it to all the class or the class and i remember we were going through some really boring topics like animal protection at that time it was really boring to me but right before everyone was going to just sleep in the class the teacher decided to put the textbook down and show us a clear from this document documentary we were shocked speechless to see the has of the dolphins chopped off and left on the beach and the C turning bloody red with their blood which is i felt sick i couldn't need fish for a whole week and it was lasting impression if not scarring impression and i think this movie is still very meaningful and it despite me a lot especially on wildlife protection dolphins or search beautiful intelligent animals of the sea and why do villagers and fishermen in japan killed it i assume there was a great benefit to its skin or some scientific research but the ironic thing is that they only kill them for the meat because the meat taste great that sickens me for awhile and i think the book inspired me to do a lot of different to do a lot of things about well i protection i follow news like";
+    std::string sampleSentence2 = "yes i can speak how to this movie is it is worth young wolf young man this is this movie from korea it's a crime movies the movies on the movies speaker speaker or words of young man love hello a cow are you saying they end so i have to go to the go to the america or ha ha ha lots of years a go on the woman the woman is very old he talk to korea he carpool i want to go to the this way this whole home house this house is a is hey so what's your man and at the end the girl cause so there's a woman open open hum finally finds other wolf so what's your young man so the young man don't so yeah man the young man remember he said here's a woman also so am i it's very it's very very sad she is she is a crack credit thank you ";
+    std::string sampleSentence3 = "yes i want i want to talk about the TV series are enjoying watching a discount name is a friends and it's uh accommodate in the third decades decades an it come out the third decades and its main characters about a six friends live in the NYC but i watched it a long time ago i can't remember the name of them and the story is about what they are happening in their in their life and there are many things treating them and how the friendship are hard friendship and how the french how the strong strongly friendship they obtain them and they always have some funny things happen they only have happened something funny things and is a comedy so that was uh so many and i like this be cause of first adult cause it has a funding it has a farming serious and it can improve my english english words and on the other hand it can i can know about a lot of cultures about the united states and i i first hear about death TV series it's come out of a website and i took into and i watch it after my after my finish my studies and when i was a bad mood when i when i'm in a bad mood or i ";
+    std::string topic = "the season of the fall";
+    // URL formation
+    std::string url = "https://" + oaiResourceName + ".openai.azure.com/openai/deployments/" + oaiDeploymentName + "/chat/completions?api-version=" + oaiApiVersion;
+
+    // JSON data to send in the POST request
+    json requestData = {
+        {"messages", {
+            {{"role", "system"}, {"content", "You are an English teacher and please help to grade a student's essay from vocabulary and grammar and topic relevance on how well the essay aligns with the title, and output format as: {\"vocabulary\": *.*(0-100), \"grammar\": *.*(0-100), \"topic\": *.*(0-100)}."}},
+            {{"role", "user"}, {"content", "Example1: this essay: \"" + sampleSentence1 + "\" has vocabulary and grammar scores of 8 and 8, respectively. Example2: this essay : \"" + sampleSentence2 + "\" has vocabulary and grammar scores of 4 and 4.3, respectively. Example3: this essay: \"" + sampleSentence3 + "\" has vocabulary and grammar scores of 5 and 5, respectively. The essay for you to score is " + sendText + ", and the title is \"" + topic + "\". The script is from speech recognition so that please first add punctuations when needed, remove duplicates and unnecessary un uh from oral speech, then find all the misuse of words and grammar errors in this essay, find advanced words and grammar usages, and finally give scores based on this information. Please only respond as this format {\"vocabulary\": *.*(0-100), \"grammar\": *.*(0-100)}, \"topic\": *.*(0-100)}."}}
+        }},
+        {"temperature", 0},
+        {"top_p", 1}
+    };
+
+    std::string jsonData = requestData.dump();
+
+    // Initialize CURL
+    curl_global_init(CURL_GLOBAL_DEFAULT);
+    curl = curl_easy_init();
+    std::string responseContent;
+    if (curl) {
+        struct curl_slist* headers = nullptr;
+
+        // Set the API key header
+        headers = curl_slist_append(headers, ("api-key: " + oaiApiKey).c_str());
+        headers = curl_slist_append(headers, "Content-Type: application/json");
+
+        // Set options for the request
+        curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
+        curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
+        curl_easy_setopt(curl, CURLOPT_POSTFIELDS, jsonData.c_str());
+        curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, jsonData.length());
+        curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0L);
+        curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 0L);
+
+        // Set the write function to capture the response
+        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
+        curl_easy_setopt(curl, CURLOPT_WRITEDATA, &responseContent);
+
+        // Perform the request
+        res = curl_easy_perform(curl);
+
+        // Check for errors
+        if (res != CURLE_OK) {
+            std::cerr << "curl_easy_perform() failed: " << curl_easy_strerror(res) << std::endl;
+            return "";
+        }
+
+        // Clean up curl
+        curl_easy_cleanup(curl);
+        curl_slist_free_all(headers);
+    }
+
+    // Global cleanup
+    curl_global_cleanup();
+
+    // Parse the JSON response
+    auto jsonResponse = json::parse(responseContent);
+    return jsonResponse["choices"][0]["message"]["content"].get<std::string>();
+}
+
 // Pronunciation assessment with content assessment
 void PronunciationAssessmentWithContentAssessment()
 {
-    // Creates an instance of a speech config with specified subscription key and service region.
-    // Replace with your own subscription key and service region (e.g., "westus").
-    auto config = SpeechConfig::FromSubscription("YourSubscriptionKey", "YourServiceRegion");
+    // Creates an instance of a speech config with specified endpoint and subscription key.
+    // Replace with your own endpoint and subscription key.
+    auto config = SpeechConfig::FromEndpoint("https://YourServiceRegion.api.cognitive.microsoft.com", "YourSubscriptionKey");
+    using json = nlohmann::json;
+    std::string oaiResourceName = "YourAoaiResourceName";
+    std::string oaiDeploymentName = "YourAoaiDeploymentName";
+    std::string oaiApiVersion = "YourAoaiApiVersion";
+    std::string oaiApiKey = "YourAoaiApiKey";
 
     // Creates a speech recognizer from an audio file
     auto audioConfig = AudioConfig::FromWavFileInput("pronunciation_assessment_fall.wav");
-
-    std::string theTopic = "the season of the fall";
 
     // Create pronunciation assessment config, set grading system, granularity and if enable miscue based on your requirement.
     auto pronunciationConfig = PronunciationAssessmentConfig::Create("", PronunciationAssessmentGradingSystem::HundredMark, PronunciationAssessmentGranularity::Phoneme, false);
 
     pronunciationConfig->EnableProsodyAssessment();
-    pronunciationConfig->EnableContentAssessmentWithTopic(theTopic);
 
     // Creates a speech recognizer.
     auto recognizer = SpeechRecognizer::FromConfig(config, "en-US", audioConfig);
@@ -821,10 +918,6 @@ void PronunciationAssessmentWithContentAssessment()
         string text = e.Result->Text;
         if (!text.empty() && text != ".")
             recognizedTexts.push_back(text);
-
-        auto pronResult = PronunciationAssessmentResult::FromResult(e.Result);
-
-        contentResult = pronResult->ContentAssessmentResult;
     };
 
     recognizer->StartContinuousRecognitionAsync().wait();
@@ -833,20 +926,55 @@ void PronunciationAssessmentWithContentAssessment()
 
     recognizer->StopContinuousRecognitionAsync().get();
 
-    // Content assessment result is in the contentJsons
-    cout << "Content assessment for: " << endl;
-    for (const string& recognizedText : recognizedTexts) {
-        if (!recognizedText.empty()) {
-            cout << recognizedText << " ";
+    std::ostringstream connectedText;
+
+    for (size_t i = 0; i < recognizedTexts.size(); ++i) {
+        connectedText << recognizedTexts[i];
+        if (i != recognizedTexts.size() - 1) {
+            connectedText << " ";
         }
     }
-    cout << endl;
 
-    if (contentResult != nullptr) {
-        cout << "Assessment Result: " << "GrammarScore: "  << contentResult->GrammarScore << ", VocabularyScore : " << contentResult->VocabularyScore << ", TopicScore : " << contentResult->TopicScore << endl;
+    cout << "Content assessment for: " << endl;
+    cout << connectedText.str() << endl;
+
+    std::string result = GetChatCompletion(oaiResourceName, oaiDeploymentName, oaiApiVersion, oaiApiKey, connectedText.str());
+
+    try {
+        // Parse JSON response
+        json contentResult = json::parse(result);
+
+        if (!contentResult.is_null()) {
+            // Check and print vocabulary score
+            if (contentResult.contains("vocabulary")) {
+                cout << "Vocabulary score: " << fixed << std::setprecision(1) << contentResult["vocabulary"].get<double>() << endl;
+            }
+            else {
+                cout << "Vocabulary key not found." << endl;
+            }
+
+            // Check and print grammar score
+            if (contentResult.contains("grammar")) {
+                cout << "Grammar score: " << fixed << std::setprecision(1) << contentResult["grammar"].get<double>() << endl;
+            }
+            else {
+                cout << "Grammar key not found." << endl;
+            }
+
+            // Check and print topic score
+            if (contentResult.contains("topic")) {
+                cout << "Topic score: " << fixed << std::setprecision(1) << contentResult["topic"].get<double>() << endl;
+            }
+            else {
+                cout << "Topic key not found." << endl;
+            }
+        }
+        else {
+            cout << "Deserialization failed." << endl;
+        }
     }
-    else {
-        cout << "The contentResult is empty!" << endl;
+    catch (exception& ex) {
+        cerr << "An error occurred: " << ex.what() << endl;
     }
 }
 
@@ -855,9 +983,9 @@ void PronunciationAssessmentWithContentAssessment()
 void SpeechRecognitionAndLanguageIdWithMicrophone()
 {
     // <SpeechRecognitionAndLanguageIdWithMicrophone>
-    // Creates an instance of a speech config with specified subscription key and service region.
-    // Replace with your own subscription key and service region (e.g., "westus").
-    auto speechConfig = SpeechConfig::FromSubscription("YourSubscriptionKey", "YourServiceRegion");
+    // Creates an instance of a speech config with specified endpoint and subscription key.
+    // Replace with your own endpoint and subscription key.
+    auto speechConfig = SpeechConfig::FromEndpoint("https://YourServiceRegion.api.cognitive.microsoft.com", "YourSubscriptionKey");
 
     // Define the set of spoken languages that will need to be identified.
     // Replace the languages with your languages in BCP-47 format, e.g. "fr-FR".
@@ -905,9 +1033,9 @@ void SpeechRecognitionAndLanguageIdWithMicrophone()
 
 void SpeechRecognitionAndLanguageIdWithCustomModelsWithMicrophone()
 {
-    // Creates an instance of a speech config with specified subscription key and service region.
-    // Replace with your own subscription key and service region (e.g., "westus").
-    auto speechConfig = SpeechConfig::FromSubscription("YourSubscriptionKey", "YourServiceRegion");
+    // Creates an instance of a speech config with specified endpoint and subscription key.
+    // Replace with your own endpoint and subscription key.
+    auto speechConfig = SpeechConfig::FromEndpoint("https://YourServiceRegion.api.cognitive.microsoft.com", "YourSubscriptionKey");
 
     std::vector<std::shared_ptr<SourceLanguageConfig>> sourceLanguageConfigs;
 
@@ -1060,9 +1188,9 @@ void SpeechContinuousRecognitionAndLanguageIdWithMultiLingualFile()
 // Speech recognition from default microphone with Microsoft Audio Stack enabled.
 void SpeechContinuousRecognitionFromDefaultMicrophoneWithMASEnabled()
 {
-    // Creates an instance of a speech config with specified subscription key and service region.
-    // Replace with your own subscription key and service region (e.g., "westus").
-    auto config = SpeechConfig::FromSubscription("YourSubscriptionKey", "YourServiceRegion");
+    // Creates an instance of a speech config with specified endpoint and subscription key.
+    // Replace with your own endpoint and subscription key.
+    auto config = SpeechConfig::FromEndpoint("https://YourServiceRegion.api.cognitive.microsoft.com", "YourSubscriptionKey");
 
     // Creates an instance of audio config using default microphone as audio input and with audio processing options specified.
     // All default enhancements from Microsoft Audio Stack are enabled.
@@ -1131,9 +1259,9 @@ void SpeechContinuousRecognitionFromDefaultMicrophoneWithMASEnabled()
 // Speech recognition from a microphone with Microsoft Audio Stack enabled and pre-defined microphone array geometry specified.
 void SpeechRecognitionFromMicrophoneWithMASEnabledAndPresetGeometrySpecified()
 {
-    // Creates an instance of a speech config with specified subscription key and service region.
-    // Replace with your own subscription key and service region (e.g., "westus").
-    auto config = SpeechConfig::FromSubscription("YourSubscriptionKey", "YourServiceRegion");
+    // Creates an instance of a speech config with specified endpoint and subscription key.
+    // Replace with your own endpoint and subscription key.
+    auto config = SpeechConfig::FromEndpoint("https://YourServiceRegion.api.cognitive.microsoft.com", "YourSubscriptionKey");
 
     // Creates an instance of audio config using a microphone as audio input and with audio processing options specified.
     // All default enhancements from Microsoft Audio Stack are enabled and preset microphone array geometry is specified
@@ -1179,9 +1307,9 @@ void SpeechRecognitionFromMicrophoneWithMASEnabledAndPresetGeometrySpecified()
 // Speech recognition from multi-channel file with Microsoft Audio Stack enabled and custom microphone array geometry specified.
 void SpeechContinuousRecognitionFromMultiChannelFileWithMASEnabledAndCustomGeometrySpecified()
 {
-    // Creates an instance of a speech config with specified subscription key and service region.
-    // Replace with your own subscription key and service region (e.g., "westus").
-    auto config = SpeechConfig::FromSubscription("YourSubscriptionKey", "YourServiceRegion");
+    // Creates an instance of a speech config with specified endpoint and subscription key.
+    // Replace with your own endpoint and subscription key.
+    auto config = SpeechConfig::FromEndpoint("https://YourServiceRegion.api.cognitive.microsoft.com", "YourSubscriptionKey");
 
     // Creates an instance of audio config using multi-channel WAV file as audio input and with audio processing options specified.
     // All default enhancements from Microsoft Audio Stack are enabled and custom microphone array geometry is provided.
@@ -1290,9 +1418,9 @@ void SpeechRecognitionFromPullStreamWithSelectMASEnhancementsEnabled()
         WavFileReader m_reader;
     };
 
-    // Creates an instance of a speech config with specified subscription key and service region.
-    // Replace with your own subscription key and service region (e.g., "westus").
-    auto config = SpeechConfig::FromSubscription("YourSubscriptionKey", "YourServiceRegion");
+    // Creates an instance of a speech config with specified endpoint and subscription key.
+    // Replace with your own endpoint and subscription key.
+    auto config = SpeechConfig::FromEndpoint("https://YourServiceRegion.api.cognitive.microsoft.com", "YourSubscriptionKey");
 
     // Creates a callback that will read audio data from a WAV file.
     // Microsoft Audio Stack supports sample rates that are integral multiples of 16 KHz. Additionally, the following
@@ -1346,9 +1474,9 @@ void SpeechRecognitionFromPullStreamWithSelectMASEnhancementsEnabled()
 // Speech recognition from push stream with Microsoft Audio Stack enabled and beamforming angles specified.
 void SpeechContinuousRecognitionFromPushStreamWithMASEnabledAndBeamformingAnglesSpecified()
 {
-    // Creates an instance of a speech config with specified subscription key and service region.
-    // Replace with your own subscription key and service region (e.g., "westus").
-    auto config = SpeechConfig::FromSubscription("YourSubscriptionKey", "YourServiceRegion");
+    // Creates an instance of a speech config with specified endpoint and subscription key.
+    // Replace with your own endpoint and subscription key.
+    auto config = SpeechConfig::FromEndpoint("https://YourServiceRegion.api.cognitive.microsoft.com", "YourSubscriptionKey");
 
     // Creates a push stream.
     auto pushStream = AudioInputStream::CreatePushStream(AudioStreamFormat::GetWaveFormatPCM(16000, 16, 8));
